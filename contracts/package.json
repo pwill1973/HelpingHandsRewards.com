@@ -1,0 +1,24 @@
+{
+  "name": "helping-hands-rewards-contracts",
+  "version": "1.0.0",
+  "description": "TON Smart Contracts for 2×2 Community Matrix",
+  "scripts": {
+    "compile": "tact --config tact.config.json",
+    "test": "jest",
+    "deploy:testnet": "blueprint run",
+    "deploy:mainnet": "blueprint run --mainnet"
+  },
+  "keywords": ["TON", "Tact", "Smart Contract", "Matrix"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@tact-lang/compiler": "^1.4.0",
+    "@ton/blueprint": "^0.19.0",
+    "@ton/core": "^0.56.0",
+    "@ton/crypto": "^3.2.0",
+    "@ton/ton": "^13.11.0",
+    "jest": "^29.7.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

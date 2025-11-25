@@ -1,0 +1,17 @@
+{
+  "projects": [
+    {
+      "name": "HelpingHandsRewards2x2",
+      "path": "./HelpingHandsRewards2x2.tact",
+      "output": "./build",
+      "options": {
+        "debug": true,
+        "masterchain": false,
+        "external": true,
+        "experimental": {
+          "inline": true
+        }
+      }
+    }
+  ]
+}
