@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "dev:sandbox": "wrangler pages dev dist --d1=ton-matrix-db --local --ip 0.0.0.0 --port 3000",
-    "build": "tsc && vite build",
+    "build": "./build.sh",
+    "build:client": "vite build --config vite.config.client.ts",
+    "build:worker": "vite build --config vite.config.worker.ts",
     "preview": "wrangler pages dev dist --d1=ton-matrix-db --local",
     "deploy": "npm run build && wrangler pages deploy dist",
     "deploy:prod": "npm run build && wrangler pages deploy dist --project-name ton-community-matrix",

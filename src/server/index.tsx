@@ -31,19 +31,22 @@ app.get('/api/health', (c) => {
   })
 })
 
-// Serve static files (Cloudflare Pages will handle this automatically)
+// SPA fallback - serve index.html for all non-API routes
+// Static assets (/assets/*) are automatically served by Cloudflare Pages
 app.get('*', (c) => {
   return c.html(`<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="2×2 Community Matrix on TON - A decentralized community support system built on the TON blockchain" />
     <title>2×2 Community Matrix on TON</title>
-    <link rel="stylesheet" href="/assets/index.css" />
+    <script type="module" crossorigin src="/assets/index-DB_3NJbd.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Bijditlr.css">
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/assets/index.js"></script>
   </body>
 </html>`)
 })

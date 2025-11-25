@@ -1,15 +1,9 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
 import cloudflarePages from '@hono/vite-cloudflare-pages'
-import devServer from '@hono/vite-dev-server'
 
 export default defineConfig({
   plugins: [
-    react(),
     cloudflarePages({
-      entry: 'src/server/index.tsx'
-    }),
-    devServer({
       entry: 'src/server/index.tsx'
     })
   ],
@@ -20,5 +14,9 @@ export default defineConfig({
       '@client': '/src/client',
       '@shared': '/src/shared'
     }
+  },
+  build: {
+    outDir: 'dist',
+    emptyOutDir: false  // Don't delete client assets
   }
 })
