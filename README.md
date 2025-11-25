@@ -109,6 +109,17 @@ Users can activate multiple levels at registration:
 
 Each level operates independently with its own matrix structure.
 
+## 🎉 Smart Contract Available!
+
+A complete **Tact smart contract** implementation is now available in `/contracts/`:
+- ✅ Full 2×2 matrix logic on-chain
+- ✅ 10 Contribution Levels
+- ✅ Auto-upgrade & re-entry
+- ✅ Event logging for off-chain sync
+- ✅ Ready for testnet deployment
+
+See [`SMART_CONTRACT_SUMMARY.md`](./SMART_CONTRACT_SUMMARY.md) for complete details.
+
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -116,6 +127,7 @@ Each level operates independently with its own matrix structure.
 - Node.js 18+ installed
 - npm or yarn
 - Wrangler CLI (for Cloudflare)
+- Tact compiler (for smart contract deployment)
 
 ### Installation
 
@@ -250,7 +262,10 @@ The matrix placement algorithm implements:
 - [x] TON wallet integration (stubbed)
 - [x] Basic UI with matrix visualization
 
-### Phase 2: TON Integration (🚧 In Progress)
+### Phase 2: TON Integration (✅ 50% Complete)
+- [x] Smart contract implementation in Tact
+- [x] Complete contract documentation
+- [x] Integration guide with backend
 - [ ] Smart contract deployment on TON testnet
 - [ ] USDT-TON contribution processing
 - [ ] On-chain transaction verification
