@@ -1,8 +1,11 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { useLanguage } from '../contexts/LanguageContext'
+import LanguageSwitcher from './LanguageSwitcher'
 
 export default function Layout() {
   const { user, logout, isAuthenticated } = useAuth()
+  const { t } = useLanguage()
   const navigate = useNavigate()
 
   const handleLogout = async () => {
@@ -25,33 +28,34 @@ export default function Layout() {
             </div>
 
             <div className="flex items-center space-x-4">
+              <LanguageSwitcher />
               {isAuthenticated ? (
                 <>
                   <Link to="/dashboard" className="text-gray-700 dark:text-gray-300 hover:text-ton-blue">
-                    Dashboard
+                    {t.navigation.dashboard}
                   </Link>
                   <Link to="/matrix" className="text-gray-700 dark:text-gray-300 hover:text-ton-blue">
-                    Matrix
+                    {t.navigation.matrix}
                   </Link>
                   {user?.isAdmin && (
                     <Link to="/admin" className="text-gray-700 dark:text-gray-300 hover:text-ton-blue">
-                      Admin
+                      {t.navigation.admin}
                     </Link>
                   )}
                   <div className="text-sm text-gray-600 dark:text-gray-400">
                     {user?.fullName}
                   </div>
                   <button onClick={handleLogout} className="btn-secondary text-sm py-1 px-4">
-                    Logout
+                    {t.common.logout}
                   </button>
                 </>
               ) : (
                 <>
                   <Link to="/login" className="text-gray-700 dark:text-gray-300 hover:text-ton-blue">
-                    Sign In
+                    {t.common.login}
                   </Link>
                   <Link to="/join" className="btn-primary">
-                    Join Community
+                    {t.common.joinCommunity}
                   </Link>
                 </>
               )}

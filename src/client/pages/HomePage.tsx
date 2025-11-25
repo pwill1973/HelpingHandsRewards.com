@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { useLanguage } from '../contexts/LanguageContext'
 
 export default function HomePage() {
   const { isAuthenticated } = useAuth()
+  const { t } = useLanguage()
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
@@ -11,14 +13,13 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-            HelpingHandsRewards.com
+            {t.home.heroTitle}
           </h1>
           <p className="text-xl md:text-2xl mb-4 text-blue-100">
-            A 2×2 Community Matrix powered by people helping people on TON
+            {t.home.heroSubtitle}
           </p>
           <p className="text-lg md:text-xl mb-8 max-w-3xl mx-auto text-blue-50">
-            Start with a simple Contribution in USDT-TON. Join a global community where support 
-            and Recurring Rewards flow through a transparent 2×2 Community Matrix.
+            {t.home.heroDescription}
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
@@ -26,19 +27,27 @@ export default function HomePage() {
               to={isAuthenticated ? "/dashboard" : "/join"} 
               className="bg-white text-ton-blue hover:bg-gray-100 font-bold py-4 px-8 rounded-lg text-lg transition-all shadow-lg hover:shadow-xl"
             >
-              Join the Community
+              {t.home.ctaButton}
             </Link>
             <a 
               href="#telegram-app" 
               className="border-2 border-white hover:bg-white hover:text-ton-blue font-bold py-4 px-8 rounded-lg text-lg transition-all"
             >
-              Open Telegram Mini-App
+              {t.home.telegramButton}
             </a>
           </div>
           
           <p className="text-sm text-blue-100 max-w-2xl mx-auto">
-            <strong>Important:</strong> No guarantees, no promises. Your Recurring Rewards depend on 
-            your own participation and the activity of your community.
+            <strong>{t.compliance.disclaimer.split(':')[0]}:</strong> {t.compliance.disclaimer.split(':')[1]}
+          </p>
+        </div>
+      </section>
+
+      {/* Contribution Intro Section (NEW) */}
+      <section className="py-12 bg-blue-50 dark:bg-gray-800">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+            {t.home.contributionIntro}
           </p>
         </div>
       </section>
@@ -47,48 +56,44 @@ export default function HomePage() {
       <section className="py-20 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
-            What is HelpingHandsRewards.com?
+            {t.home.whatIsTitle}
           </h2>
           
           <div className="max-w-4xl mx-auto">
             <p className="text-lg text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
-              <strong>HelpingHandsRewards.com</strong> is a decentralized multi-level community support 
-              system built on the TON network.
+              <strong>{t.home.heroTitle}</strong> {t.home.whatIsIntro.split('HelpingHandsRewards.com')[1]}
             </p>
             
             <p className="text-lg text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
-              It uses a simple <strong>2×2 Community Matrix</strong> and <strong>10 Contribution Levels</strong> in 
-              USDT-TON, starting at just <strong>5 USDT-TON</strong>.
+              {t.home.whatIsDetails}
             </p>
             
             <div className="bg-blue-50 dark:bg-gray-800 rounded-xl p-8 mb-6">
-              <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Our focus is simple:</h3>
+              <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">{t.home.focusTitle}</h3>
               <ul className="space-y-3 text-lg text-gray-700 dark:text-gray-300">
                 <li className="flex items-start">
                   <svg className="w-6 h-6 text-ton-blue mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>People helping people</span>
+                  <span>{t.home.focusPoint1}</span>
                 </li>
                 <li className="flex items-start">
                   <svg className="w-6 h-6 text-ton-blue mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>Transparent Contribution flows</span>
+                  <span>{t.home.focusPoint2}</span>
                 </li>
                 <li className="flex items-start">
                   <svg className="w-6 h-6 text-ton-blue mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>Recurring Rewards generated by real community activity</span>
+                  <span>{t.home.focusPoint3}</span>
                 </li>
               </ul>
             </div>
             
             <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-              There are <strong>no promises of income</strong>, no financial guarantees, and no investment 
-              language. This is a <strong>community-driven platform</strong> where every member decides 
-              their own level of participation.
+              {t.home.noPromises}
             </p>
           </div>
         </div>
@@ -98,7 +103,7 @@ export default function HomePage() {
       <section className="py-20 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
-            How the 2×2 Community Matrix Works
+            {t.home.howWorksTitle}
           </h2>
           
           <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
@@ -108,12 +113,10 @@ export default function HomePage() {
                 1
               </div>
               <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-                Choose Your Contribution Levels
+                {t.home.step1Title}
               </h3>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                You can start at the <strong>5 USDT-TON</strong> Contribution Level, or activate 
-                several levels at once (for example 5, 10, and 20). Each Contribution Level gives 
-                you your own 2×2 Community Matrix.
+                {t.home.step1Description}
               </p>
             </div>
 
@@ -123,12 +126,10 @@ export default function HomePage() {
                 2
               </div>
               <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-                Invite Others to Join
+                {t.home.step2Title}
               </h3>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                You receive a personal referral link. When someone joins using your link, they are 
-                placed in the next available position of your 2×2 Community Matrix in a fixed 
-                <strong> 1 → 2 → 3 → 4 → 5 → 6</strong> order.
+                {t.home.step2Description}
               </p>
             </div>
 
@@ -138,13 +139,13 @@ export default function HomePage() {
                 3
               </div>
               <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-                Community Rewards Flow Through 6 Positions
+                {t.home.step3Title}
               </h3>
               <ul className="space-y-2 text-gray-700 dark:text-gray-300">
-                <li>• <strong>Positions 1 and 2</strong> help support your inviter and the wider community</li>
-                <li>• <strong>Positions 3 and 4</strong> send Recurring Rewards directly to you</li>
-                <li>• <strong>Position 5</strong> helps you auto-upgrade to the next Contribution Level</li>
-                <li>• <strong>Position 6</strong> triggers a re-entry, starting a new cycle</li>
+                <li>• {t.home.step3Point1}</li>
+                <li>• {t.home.step3Point2}</li>
+                <li>• {t.home.step3Point3}</li>
+                <li>• {t.home.step3Point4}</li>
               </ul>
             </div>
 
@@ -154,12 +155,10 @@ export default function HomePage() {
                 4
               </div>
               <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-                Auto-Upgrade Towards All 10 Levels
+                {t.home.step4Title}
               </h3>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                Over time, the goal is to be active on all 10 Contribution Levels, supported by 
-                community activity, auto-upgrade from lower levels, and continuous re-entry into 
-                the Community Matrix.
+                {t.home.step4Description}
               </p>
             </div>
           </div>
@@ -170,73 +169,40 @@ export default function HomePage() {
       <section className="py-20 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-6 text-gray-900 dark:text-white">
-            Contribution Levels in USDT-TON
+            {t.home.levelsTitle}
           </h2>
           <p className="text-center text-gray-600 dark:text-gray-400 mb-12 max-w-3xl mx-auto">
-            You decide where to start. You can activate a single level or multiple levels at once. 
-            Auto-upgrade helps you gradually reach higher Contribution Levels over time.
+            {t.home.levelsSubtitle}
           </p>
           
           <div className="max-w-4xl mx-auto overflow-x-auto">
             <table className="w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
               <thead className="bg-ton-blue text-white">
                 <tr>
-                  <th className="px-6 py-4 text-left">Level</th>
-                  <th className="px-6 py-4 text-right">Contribution (USDT-TON)</th>
-                  <th className="px-6 py-4 text-left">Description</th>
+                  <th className="px-6 py-4 text-left">{t.common.level}</th>
+                  <th className="px-6 py-4 text-right">{t.common.contribution} ({t.common.usdt_ton})</th>
+                  <th className="px-6 py-4 text-left">{t.levels.status}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                <tr className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">1</td>
-                  <td className="px-6 py-4 text-right font-bold text-ton-blue">5</td>
-                  <td className="px-6 py-4 text-gray-700 dark:text-gray-300">Entry door into the community</td>
-                </tr>
-                <tr className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">2</td>
-                  <td className="px-6 py-4 text-right font-bold text-ton-blue">10</td>
-                  <td className="px-6 py-4 text-gray-700 dark:text-gray-300">Builds on your first Contribution</td>
-                </tr>
-                <tr className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">3</td>
-                  <td className="px-6 py-4 text-right font-bold text-ton-blue">20</td>
-                  <td className="px-6 py-4 text-gray-700 dark:text-gray-300">Expands your 2×2 Community Matrix</td>
-                </tr>
-                <tr className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">4</td>
-                  <td className="px-6 py-4 text-right font-bold text-ton-blue">40</td>
-                  <td className="px-6 py-4 text-gray-700 dark:text-gray-300">Higher-level community support</td>
-                </tr>
-                <tr className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">5</td>
-                  <td className="px-6 py-4 text-right font-bold text-ton-blue">80</td>
-                  <td className="px-6 py-4 text-gray-700 dark:text-gray-300">Deeper participation</td>
-                </tr>
-                <tr className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">6</td>
-                  <td className="px-6 py-4 text-right font-bold text-ton-blue">160</td>
-                  <td className="px-6 py-4 text-gray-700 dark:text-gray-300">Advanced level</td>
-                </tr>
-                <tr className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">7</td>
-                  <td className="px-6 py-4 text-right font-bold text-ton-blue">320</td>
-                  <td className="px-6 py-4 text-gray-700 dark:text-gray-300">Growing Community Rewards</td>
-                </tr>
-                <tr className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">8</td>
-                  <td className="px-6 py-4 text-right font-bold text-ton-blue">640</td>
-                  <td className="px-6 py-4 text-gray-700 dark:text-gray-300">High-activity community segment</td>
-                </tr>
-                <tr className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">9</td>
-                  <td className="px-6 py-4 text-right font-bold text-ton-blue">1,280</td>
-                  <td className="px-6 py-4 text-gray-700 dark:text-gray-300">Upper tier support</td>
-                </tr>
-                <tr className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">10</td>
-                  <td className="px-6 py-4 text-right font-bold text-ton-blue">2,560</td>
-                  <td className="px-6 py-4 text-gray-700 dark:text-gray-300">Full HelpingHandsRewards journey</td>
-                </tr>
+                {[
+                  { level: 1, amount: 5, desc: t.home.levelDescription1 },
+                  { level: 2, amount: 10, desc: t.home.levelDescription2 },
+                  { level: 3, amount: 20, desc: t.home.levelDescription3 },
+                  { level: 4, amount: 40, desc: t.home.levelDescription4 },
+                  { level: 5, amount: 80, desc: t.home.levelDescription5 },
+                  { level: 6, amount: 160, desc: t.home.levelDescription6 },
+                  { level: 7, amount: 320, desc: t.home.levelDescription7 },
+                  { level: 8, amount: 640, desc: t.home.levelDescription8 },
+                  { level: 9, amount: 1280, desc: t.home.levelDescription9 },
+                  { level: 10, amount: 2560, desc: t.home.levelDescription10 },
+                ].map((item) => (
+                  <tr key={item.level} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">{item.level}</td>
+                    <td className="px-6 py-4 text-right font-bold text-ton-blue">{item.amount.toLocaleString()}</td>
+                    <td className="px-6 py-4 text-gray-700 dark:text-gray-300">{item.desc}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -247,7 +213,7 @@ export default function HomePage() {
       <section className="py-20 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
-            Why TON and Telegram?
+            {t.home.whyTonTitle}
           </h2>
           
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -257,9 +223,9 @@ export default function HomePage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Low Fees & Fast</h3>
+              <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">{t.home.tonReason1Title}</h3>
               <p className="text-gray-700 dark:text-gray-300">
-                TON offers low fees and fast confirmations, ideal for small Contributions and frequent transactions.
+                {t.home.tonReason1Description}
               </p>
             </div>
 
@@ -269,9 +235,9 @@ export default function HomePage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Mobile-First</h3>
+              <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">{t.home.tonReason2Title}</h3>
               <p className="text-gray-700 dark:text-gray-300">
-                Telegram mini-apps allow seamless mobile access without browser extensions or complex setups.
+                {t.home.tonReason2Description}
               </p>
             </div>
 
@@ -281,9 +247,9 @@ export default function HomePage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Global Community</h3>
+              <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">{t.home.tonReason3Title}</h3>
               <p className="text-gray-700 dark:text-gray-300">
-                Perfect for a worldwide, mobile-first community with millions of Telegram users already onboard.
+                {t.home.tonReason3Description}
               </p>
             </div>
           </div>
@@ -294,39 +260,37 @@ export default function HomePage() {
       <section className="py-20 bg-ton-blue text-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-8">
-            People Helping People On-Chain
+            {t.home.philosophyTitle}
           </h2>
           
           <p className="text-xl mb-6 leading-relaxed">
-            HelpingHandsRewards.com follows a <strong>people helping people</strong> philosophy.
+            {t.home.philosophyIntro}
           </p>
           
           <p className="text-lg mb-8 leading-relaxed max-w-3xl mx-auto">
-            Every Contribution supports a living community structure. Rewards are never described as 
-            income, profit, or investment returns. Instead, we speak about <strong>Contributions</strong> and 
-            <strong> Recurring Rewards</strong> generated by community activity in the 2×2 Community Matrix.
+            {t.home.philosophyDescription}
           </p>
           
           <div className="bg-white/10 rounded-xl p-8 max-w-3xl mx-auto">
-            <h3 className="text-xl font-bold mb-4">Members are encouraged to:</h3>
+            <h3 className="text-xl font-bold mb-4">{t.home.encourageTitle}</h3>
             <ul className="space-y-3 text-lg text-left">
               <li className="flex items-start">
                 <svg className="w-6 h-6 mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                <span>Share the platform honestly</span>
+                <span>{t.home.encouragePoint1}</span>
               </li>
               <li className="flex items-start">
                 <svg className="w-6 h-6 mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                <span>Avoid financial promises</span>
+                <span>{t.home.encouragePoint2}</span>
               </li>
               <li className="flex items-start">
                 <svg className="w-6 h-6 mr-3 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                <span>Focus on transparency, consistency, and community support</span>
+                <span>{t.home.encouragePoint3}</span>
               </li>
             </ul>
           </div>
@@ -337,58 +301,54 @@ export default function HomePage() {
       <section id="faq" className="py-20 bg-white dark:bg-gray-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
-            Frequently Asked Questions
+            {t.home.faqTitle}
           </h2>
           
           <div className="space-y-6">
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">
-                Is this an investment?
+                {t.home.faq1Question}
               </h3>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                <strong>No.</strong> HelpingHandsRewards.com is a decentralized community support system. 
-                We do not offer investments, guarantees, or fixed returns.
+                <strong>{t.common.no}.</strong> {t.home.faq1Answer}
               </p>
             </div>
 
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">
-                What do I need to participate?
+                {t.home.faq2Question}
               </h3>
               <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2">
-                <li>A TON wallet that supports USDT-TON</li>
-                <li>A Telegram account (for the mini-app experience)</li>
-                <li>A Contribution in USDT-TON at one or more levels</li>
+                <li>{t.home.faq2Answer1}</li>
+                <li>{t.home.faq2Answer2}</li>
+                <li>{t.home.faq2Answer3}</li>
               </ul>
             </div>
 
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">
-                Can I lose money?
+                {t.home.faq3Question}
               </h3>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                <strong>Yes.</strong> There are no guarantees. Your Recurring Rewards depend entirely 
-                on your activity and the activity of the wider community.
+                <strong>{t.common.yes}.</strong> {t.home.faq3Answer}
               </p>
             </div>
 
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">
-                Can I start with more than one level?
+                {t.home.faq4Question}
               </h3>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                <strong>Yes.</strong> You can start with just 5 USDT-TON, or activate multiple Contribution 
-                Levels from the beginning (for example, levels 1, 2, and 3).
+                <strong>{t.common.yes}.</strong> {t.home.faq4Answer}
               </p>
             </div>
 
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">
-                What is the long-term goal?
+                {t.home.faq5Question}
               </h3>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                The long-term goal is to help committed members become active across all 10 Contribution 
-                Levels, supported by auto-upgrade and the continuous 2×2 Community Matrix.
+                {t.home.faq5Answer}
               </p>
             </div>
           </div>
@@ -399,23 +359,23 @@ export default function HomePage() {
       <section id="telegram-app" className="py-20 bg-gradient-to-br from-ton-blue to-blue-600 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Ready to Join?
+            {t.home.readyTitle}
           </h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Start your journey in the HelpingHandsRewards community today. Choose your platform:
+            {t.home.readySubtitle}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link 
               to={isAuthenticated ? "/dashboard" : "/join"} 
               className="bg-white text-ton-blue hover:bg-gray-100 font-bold py-4 px-8 rounded-lg text-lg transition-all shadow-lg"
             >
-              Web Platform
+              {t.home.webPlatform}
             </Link>
             <Link 
               to="/telegram" 
               className="border-2 border-white hover:bg-white hover:text-ton-blue font-bold py-4 px-8 rounded-lg text-lg transition-all"
             >
-              Telegram Mini-App
+              {t.home.telegramMiniApp}
             </Link>
           </div>
         </div>

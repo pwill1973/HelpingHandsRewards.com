@@ -2,6 +2,7 @@ import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { PrivyProvider } from '@privy-io/react-auth'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
+import { LanguageProvider } from './contexts/LanguageContext'
 import Layout from './components/Layout'
 import HomePage from './pages/HomePage'
 import TelegramApp from './pages/TelegramApp'
@@ -88,9 +89,11 @@ export default function App() {
       appId={AUTH_CONFIG.appId}
       config={AUTH_CONFIG.config}
     >
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </LanguageProvider>
     </PrivyProvider>
   )
 }
