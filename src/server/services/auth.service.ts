@@ -137,6 +137,64 @@ export class AuthService {
   }
 
   /**
+   * Find or create user by auth provider ID
+   * Used for seamless auth provider integration
+   */
+  async findOrCreateUserByProviderId(
+    providerId: string,
+    metadata?: { email?: string; walletAddress?: string }
+  ): Promise<UserProfile> {
+    // Try to find existing user by provider ID
+    let user = await this.db.query.users.findFirst({
+      where: eq(users.privyUserId, providerId)
+    })
+
+    if (user) {
+      return this.toUserProfile(user)
+    }
+
+    // User doesn't exist - create new account
+    const username = generateUsername(metadata?.email || `user_${providerId.slice(0, 8)}`)
+    const memberCode = await this.generateUniqueMemberCode()
+    const referralCode = await this.generateUniqueReferralCode()
+
+    const result: any = await this.db.insert(users).values({
+      privyUserId: providerId,
+      email: metadata?.email?.toLowerCase() || null,
+      passwordHash: null, // No password for auth provider users
+      fullName: metadata?.email?.split('@')[0] || 'Community Member',
+      username,
+      memberCode,
+      referralCode,
+      tonWalletAddress: metadata?.walletAddress || null,
+      isAdmin: false
+    }).returning()
+
+    const newUser = result[0]
+    return this.toUserProfile(newUser)
+  }
+
+  /**
+   * Link Telegram user ID to existing user
+   */
+  async linkTelegramUser(userId: number, telegramUserId: string): Promise<void> {
+    await this.db.update(users)
+      .set({ telegramUserId })
+      .where(eq(users.id, userId))
+  }
+
+  /**
+   * Find user by Telegram user ID
+   */
+  async findUserByTelegramId(telegramUserId: string): Promise<UserProfile | null> {
+    const user = await this.db.query.users.findFirst({
+      where: eq(users.telegramUserId, telegramUserId)
+    })
+
+    return user ? this.toUserProfile(user) : null
+  }
+
+  /**
    * Generate JWT token
    */
   private async generateToken(userId: number): Promise<string> {
@@ -208,7 +266,9 @@ export class AuthService {
   private toUserProfile(user: any): UserProfile {
     return {
       id: user.id,
-      email: user.email,
+      privyUserId: user.privyUserId || undefined,
+      telegramUserId: user.telegramUserId || undefined,
+      email: user.email || undefined,
       fullName: user.fullName,
       username: user.username,
       memberCode: user.memberCode,

@@ -6,8 +6,16 @@ import { sql } from 'drizzle-orm'
  */
 export const users = sqliteTable('users', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  email: text('email').notNull().unique(),
-  passwordHash: text('password_hash').notNull(),
+  
+  // Identity anchors (multiple ways to identify the same user)
+  privyUserId: text('privy_user_id').unique(), // Primary identity from auth provider
+  telegramUserId: text('telegram_user_id'), // Telegram user ID for mini-app
+  
+  // Legacy auth fields (kept for backward compatibility)
+  email: text('email').unique(),
+  passwordHash: text('password_hash'),
+  
+  // Profile
   fullName: text('full_name').notNull(),
   username: text('username').notNull().unique(),
   memberCode: text('member_code').notNull().unique(),

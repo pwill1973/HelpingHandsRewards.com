@@ -11,7 +11,12 @@ export interface ApiResponse<T = any> {
 
 export interface UserProfile {
   id: number
-  email: string
+  // Identity anchors
+  privyUserId?: string | null
+  telegramUserId?: string | null
+  // Legacy auth
+  email?: string | null
+  // Profile
   fullName: string
   username: string
   memberCode: string
@@ -147,4 +152,25 @@ export interface TonStatusResponse {
     contributions: number
     lastActivity?: string
   }
+}
+
+// Auth provider integration types
+export interface VerifySessionRequest {
+  authToken: string // Token from auth provider
+  telegramData?: TelegramInitData
+}
+
+export interface TelegramInitData {
+  userId: string
+  firstName: string
+  lastName?: string
+  username?: string
+  photoUrl?: string
+  authDate: number
+  hash: string
+}
+
+export interface AuthSessionResponse {
+  user: UserProfile
+  token: string // JWT for subsequent requests
 }
