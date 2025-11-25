@@ -12,8 +12,10 @@ export default function RegisterPage() {
     password: '',
     confirmPassword: '',
     country: '',
-    referralCode: referralCode
+    referralCode: referralCode,
+    selectedLevels: [1] // Default: Start with level 1 (5 USDT-TON)
   })
+  const [showLevelSelector, setShowLevelSelector] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   
@@ -55,7 +57,8 @@ export default function RegisterPage() {
         email: formData.email,
         password: formData.password,
         country: formData.country || undefined,
-        referralCode: formData.referralCode || undefined
+        referralCode: formData.referralCode || undefined,
+        selectedLevels: formData.selectedLevels
       })
       navigate('/dashboard')
     } catch (err: any) {
@@ -63,6 +66,16 @@ export default function RegisterPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const toggleLevel = (levelId: number) => {
+    setFormData(prev => {
+      const levels = prev.selectedLevels.includes(levelId)
+        ? prev.selectedLevels.filter(id => id !== levelId)
+        : [...prev.selectedLevels, levelId].sort((a, b) => a - b)
+      
+      return { ...prev, selectedLevels: levels.length > 0 ? levels : [1] }
+    })
   }
 
   return (

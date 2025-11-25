@@ -29,13 +29,19 @@ export interface UserProfile {
   }
 }
 
+export interface MatrixLevel {
+  id: number
+  level: number
+  amount: number
+  currency: string
+}
+
 export interface MatrixPositionData {
   id: number
-  ownerId: number
-  positionIndex: number
+  matrixInstanceId: number
+  slotNumber: number
   filledByUserId?: number | null
-  parentPositionId?: number | null
-  level: number
+  filledAt?: string | null
   filledByUser?: {
     id: number
     fullName: string
@@ -44,15 +50,31 @@ export interface MatrixPositionData {
   } | null
 }
 
+export interface MatrixInstanceData {
+  id: number
+  userId: number
+  levelId: number
+  cycleNumber: number
+  status: 'OPEN' | 'FILLED'
+  createdAt: string
+}
+
 export interface MatrixView {
+  level: MatrixLevel
+  instance: MatrixInstanceData
+  positions: MatrixPositionData[]
   owner: {
     id: number
     fullName: string
     memberCode: string
   }
-  positions: MatrixPositionData[]
-  level1: MatrixPositionData[]
-  level2: MatrixPositionData[]
+}
+
+export interface UserLevelStatus {
+  level: MatrixLevel
+  isActivated: boolean
+  matrixCount: number
+  lastCycle?: number
 }
 
 export interface ContributionData {
@@ -108,6 +130,7 @@ export interface RegisterRequest {
   fullName: string
   country?: string
   referralCode?: string
+  selectedLevels: number[] // Array of level IDs to activate (e.g., [1, 2, 3] for levels 5, 10, 20)
 }
 
 export interface LinkWalletRequest {

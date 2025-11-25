@@ -15,7 +15,8 @@ const registerSchema = z.object({
   password: z.string().min(8),
   fullName: z.string().min(2),
   country: z.string().optional(),
-  referralCode: z.string().optional()
+  referralCode: z.string().optional(),
+  selectedLevels: z.array(z.number()).min(1).max(10) // Must select at least 1 level, max 10
 })
 
 const loginSchema = z.object({
@@ -38,12 +39,15 @@ authRoutes.post('/register', zValidator('json', registerSchema), async (c) => {
     // Register user
     const user = await authService.register(data)
     
-    // Place user in sponsor's matrix if referred
+    // Initialize matrices for selected levels
+    await matrixService.initializeUserMatrices(user.id, data.selectedLevels)
+    
+    // Place user in sponsor's matrices if referred
     if (user.referredById) {
-      await matrixService.placeNewMember(user.referredById, user.id)
-    } else {
-      // Initialize matrix for first user (no sponsor)
-      await matrixService.initializeMatrix(user.id)
+      // Place in each activated level
+      for (const levelId of data.selectedLevels) {
+        await matrixService.placeNewMember(user.referredById, user.id, levelId)
+      }
     }
     
     // Generate token

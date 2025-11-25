@@ -4,7 +4,7 @@ import { sql } from 'drizzle-orm'
 /**
  * Users table - stores all user accounts
  */
-export const users: any = sqliteTable('users', {
+export const users = sqliteTable('users', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   email: text('email').notNull().unique(),
   passwordHash: text('password_hash').notNull(),
@@ -19,7 +19,7 @@ export const users: any = sqliteTable('users', {
   tonNetwork: text('ton_network', { enum: ['testnet', 'mainnet'] }).default('testnet'),
   
   // Referral relationship
-  referredById: integer('referred_by_id').references(() => users.id),
+  referredById: integer('referred_by_id'),
   
   // Admin flag
   isAdmin: integer('is_admin', { mode: 'boolean' }).default(false).notNull(),
@@ -30,26 +30,27 @@ export const users: any = sqliteTable('users', {
 })
 
 /**
- * Matrix Positions - represents the 2×2 matrix structure
- * Each user has 6 positions: 2 on Level 1, 4 on Level 2
+ * Matrix Levels - defines the 10 contribution levels
+ * Amounts: 5, 10, 20, 40, 80, 160, 320, 640, 1280, 2560 USDT-TON
  */
-export const matrixPositions = sqliteTable('matrix_positions', {
+export const matrixLevels = sqliteTable('matrix_levels', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  
-  // The user who owns this matrix position
-  ownerId: integer('owner_id').notNull().references(() => users.id),
-  
-  // Position index: 1-6 (1-2 for Level 1, 3-6 for Level 2)
-  positionIndex: integer('position_index').notNull(),
-  
-  // The user filling this position (null if empty)
-  filledByUserId: integer('filled_by_user_id').references(() => users.id),
-  
-  // Parent position (for Level 2 positions referencing Level 1)
-  parentPositionId: integer('parent_position_id'),
-  
-  // Level: 1 or 2
-  level: integer('level').notNull(),
+  level: integer('level').notNull().unique(), // 1-10
+  amount: real('amount').notNull(), // 5, 10, 20, 40, 80, 160, 320, 640, 1280, 2560
+  currency: text('currency').default('USDT-TON').notNull(),
+  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`).notNull()
+})
+
+/**
+ * Matrix Instances - one per user per level
+ * Each user can have multiple matrix instances per level (due to re-entry)
+ */
+export const matrixInstances = sqliteTable('matrix_instances', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').notNull().references(() => users.id),
+  levelId: integer('level_id').notNull().references(() => matrixLevels.id),
+  cycleNumber: integer('cycle_number').default(1).notNull(), // Increments with each re-entry
+  status: text('status', { enum: ['OPEN', 'FILLED'] }).default('OPEN').notNull(),
   
   // Timestamps
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`).notNull(),
@@ -57,19 +58,44 @@ export const matrixPositions = sqliteTable('matrix_positions', {
 })
 
 /**
+ * Matrix Positions - exactly 6 positions per matrix instance
+ * Slot numbers: 1, 2, 3, 4, 5, 6 (fixed order)
+ * 
+ * Structure:
+ *          [YOU]
+ *         /     \
+ *     [1]       [2]
+ *    /  \       /  \
+ *  [3]  [5]   [4]  [6]
+ */
+export const matrixPositions = sqliteTable('matrix_positions', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  matrixInstanceId: integer('matrix_instance_id').notNull().references(() => matrixInstances.id),
+  slotNumber: integer('slot_number').notNull(), // 1-6 (fixed order)
+  filledByUserId: integer('filled_by_user_id').references(() => users.id),
+  
+  // Timestamps
+  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`).notNull(),
+  filledAt: text('filled_at')
+})
+
+/**
  * Contributions - records of community contributions
- * These will eventually be on-chain TON transactions
  */
 export const contributions = sqliteTable('contributions', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   userId: integer('user_id').notNull().references(() => users.id),
+  levelId: integer('level_id').notNull().references(() => matrixLevels.id),
   amount: real('amount').notNull(),
-  currency: text('currency').default('TON').notNull(),
+  currency: text('currency').default('USDT-TON').notNull(),
   status: text('status', { enum: ['pending', 'confirmed', 'failed'] }).default('pending').notNull(),
   
   // TON blockchain data
   txHash: text('tx_hash'),
   network: text('network', { enum: ['testnet', 'mainnet'] }).default('testnet').notNull(),
+  
+  // Related matrix instance
+  matrixInstanceId: integer('matrix_instance_id').references(() => matrixInstances.id),
   
   // Timestamps
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`).notNull(),
@@ -78,21 +104,35 @@ export const contributions = sqliteTable('contributions', {
 
 /**
  * Rewards - community rewards tracking
- * Types: REFERRAL, MATRIX, COMMUNITY
+ * Types: DIRECT (positions 3,4), UPGRADE (position 5), REENTRY (position 6)
  */
 export const rewards = sqliteTable('rewards', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   userId: integer('user_id').notNull().references(() => users.id),
-  type: text('type', { enum: ['REFERRAL', 'MATRIX', 'COMMUNITY'] }).notNull(),
+  levelId: integer('level_id').notNull().references(() => matrixLevels.id),
+  type: text('type', { enum: ['DIRECT', 'UPGRADE', 'REENTRY', 'REFERRAL'] }).notNull(),
   amount: real('amount').notNull(),
-  currency: text('currency').default('TON').notNull(),
+  currency: text('currency').default('USDT-TON').notNull(),
   description: text('description').notNull(),
   
-  // Related contribution (if applicable)
+  // Related records
   contributionId: integer('contribution_id').references(() => contributions.id),
+  matrixInstanceId: integer('matrix_instance_id').references(() => matrixInstances.id),
+  fromUserId: integer('from_user_id').references(() => users.id), // Who triggered this reward
   
   // Timestamps
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`).notNull()
+})
+
+/**
+ * User Level Activations - tracks which levels a user has activated
+ */
+export const userLevelActivations = sqliteTable('user_level_activations', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').notNull().references(() => users.id),
+  levelId: integer('level_id').notNull().references(() => matrixLevels.id),
+  isActive: integer('is_active', { mode: 'boolean' }).default(true).notNull(),
+  activatedAt: text('activated_at').default(sql`CURRENT_TIMESTAMP`).notNull()
 })
 
 /**
@@ -100,6 +140,12 @@ export const rewards = sqliteTable('rewards', {
  */
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert
+
+export type MatrixLevel = typeof matrixLevels.$inferSelect
+export type NewMatrixLevel = typeof matrixLevels.$inferInsert
+
+export type MatrixInstance = typeof matrixInstances.$inferSelect
+export type NewMatrixInstance = typeof matrixInstances.$inferInsert
 
 export type MatrixPosition = typeof matrixPositions.$inferSelect
 export type NewMatrixPosition = typeof matrixPositions.$inferInsert
@@ -109,3 +155,6 @@ export type NewContribution = typeof contributions.$inferInsert
 
 export type Reward = typeof rewards.$inferSelect
 export type NewReward = typeof rewards.$inferInsert
+
+export type UserLevelActivation = typeof userLevelActivations.$inferSelect
+export type NewUserLevelActivation = typeof userLevelActivations.$inferInsert
