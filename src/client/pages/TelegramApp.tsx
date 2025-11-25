@@ -48,22 +48,65 @@ export default function TelegramApp() {
   const [rewards, setRewards] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [isTelegram, setIsTelegram] = useState(false)
+  const [telegramInitialized, setTelegramInitialized] = useState(false)
 
   useEffect(() => {
-    // Initialize Telegram WebApp
-    if (window.Telegram?.WebApp) {
-      const tg = window.Telegram.WebApp
-      tg.ready()
-      tg.expand()
-      setIsTelegram(true)
-      
-      // You can access Telegram user data here
-      const telegramUser = tg.initDataUnsafe?.user
-      console.log('Telegram user:', telegramUser)
+    initializeTelegramUser()
+  }, [])
+
+  // Initialize Telegram user with backend
+  const initializeTelegramUser = async () => {
+    if (!window.Telegram?.WebApp) {
+      setLoading(false)
+      return
     }
 
-    loadData()
-  }, [])
+    const tg = window.Telegram.WebApp
+    tg.ready()
+    tg.expand()
+    setIsTelegram(true)
+
+    const telegramUser = tg.initDataUnsafe?.user
+    
+    if (!telegramUser) {
+      setLoading(false)
+      return
+    }
+
+    try {
+      // Initialize user with backend
+      const response = await fetch('/api/auth/telegram-init', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          telegramData: {
+            userId: String(telegramUser.id),
+            firstName: telegramUser.first_name,
+            lastName: telegramUser.last_name,
+            username: telegramUser.username,
+            authDate: Date.now(),
+            hash: tg.initData
+          }
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.success && data.data) {
+        // Store JWT token
+        api.setToken(data.data.token)
+        setTelegramInitialized(true)
+        
+        // Refresh user data
+        await refreshUser()
+        await loadData()
+      }
+    } catch (error) {
+      console.error('Telegram initialization failed:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
     if (tonAddress && !user?.tonWalletAddress) {
