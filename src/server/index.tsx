@@ -42,8 +42,8 @@ app.get('*', (c) => {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="2×2 Community Matrix on TON - A decentralized community support system built on the TON blockchain" />
     <title>2×2 Community Matrix on TON</title>
-    <script type="module" crossorigin src="/assets/index-DB_3NJbd.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-Bijditlr.css">
+    <script type="module" crossorigin src="/assets/index-t03GXj-2.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-UOh1woCH.css">
   </head>
   <body>
     <div id="root"></div>
