@@ -2,7 +2,8 @@ import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import Layout from './components/Layout'
-import LandingPage from './pages/LandingPage'
+import HomePage from './pages/HomePage'
+import TelegramApp from './pages/TelegramApp'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/DashboardPage'
@@ -37,7 +38,8 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
-        <Route index element={<LandingPage />} />
+        <Route index element={<HomePage />} />
+        <Route path="telegram" element={<TelegramApp />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="join" element={<RegisterPage />} />
         

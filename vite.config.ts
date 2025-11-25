@@ -5,8 +5,10 @@ import devServer from '@hono/vite-dev-server'
 
 export default defineConfig({
   plugins: [
+    pages({
+      entry: 'src/server/index.tsx'
+    }),
     react(),
-    pages(),
     devServer({
       entry: 'src/server/index.tsx'
     })
@@ -20,9 +22,6 @@ export default defineConfig({
     }
   },
   build: {
-    outDir: 'dist',
-    rollupOptions: {
-      input: './src/client/main.tsx'
-    }
+    outDir: 'dist'
   }
 })
