@@ -1,0 +1,51 @@
+{
+  "name": "ton-community-matrix",
+  "version": "1.0.0",
+  "description": "2×2 Community Matrix on TON - Decentralized community support system",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:sandbox": "wrangler pages dev dist --d1=ton-matrix-db --local --ip 0.0.0.0 --port 3000",
+    "build": "tsc && vite build",
+    "preview": "wrangler pages dev dist --d1=ton-matrix-db --local",
+    "deploy": "npm run build && wrangler pages deploy dist",
+    "deploy:prod": "npm run build && wrangler pages deploy dist --project-name ton-community-matrix",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate:sqlite",
+    "db:migrate:local": "wrangler d1 migrations apply ton-matrix-db --local",
+    "db:migrate:prod": "wrangler d1 migrations apply ton-matrix-db",
+    "db:studio": "drizzle-kit studio",
+    "db:reset": "rm -rf .wrangler/state/v3/d1 && npm run db:migrate:local",
+    "test": "vitest",
+    "clean-port": "fuser -k 3000/tcp 2>/dev/null || true"
+  },
+  "dependencies": {
+    "hono": "^4.6.3",
+    "@hono/zod-validator": "^0.2.2",
+    "drizzle-orm": "^0.33.0",
+    "zod": "^3.23.8",
+    "bcryptjs": "^2.4.3",
+    "jose": "^5.9.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2",
+    "@tonconnect/ui-react": "^2.0.9"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250106.0",
+    "@hono/vite-cloudflare-pages": "^0.4.2",
+    "@hono/vite-dev-server": "^0.15.1",
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "@types/bcryptjs": "^2.4.6",
+    "vite": "^5.4.8",
+    "typescript": "^5.6.2",
+    "drizzle-kit": "^0.24.2",
+    "wrangler": "^3.78.12",
+    "vitest": "^2.1.1",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13"
+  }
+}

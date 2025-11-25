@@ -1,0 +1,11 @@
+# JWT Secret for authentication
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+
+# TON Network Configuration (testnet or mainnet)
+TON_NETWORK=testnet
+
+# TON API Endpoint (placeholder for future integration)
+TON_API_ENDPOINT=https://testnet.toncenter.com/api/v2/jsonRPC
+
+# Environment
+NODE_ENV=development
