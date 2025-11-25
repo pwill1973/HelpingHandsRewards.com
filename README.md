@@ -1,158 +1,121 @@
 # 2×2 Community Matrix on TON
 
-A production-ready decentralized community support system built on the TON blockchain, deployed on Cloudflare Pages with D1 database.
+A decentralized community support system built on the TON blockchain with 10 Contribution Levels, featuring auto-upgrade and re-entry mechanisms.
 
 ## 🌟 Project Overview
 
-**Name**: 2×2 Community Matrix on TON  
-**Description**: Decentralized multi-level community support system using a 2×2 matrix structure  
-**Philosophy**: People helping people through transparent, on-chain community rewards
+This is a production-ready, full-stack web application implementing a **2×2 Community Matrix** structure with the following key features:
 
-### Key Features
+- **10 Contribution Levels**: 5, 10, 20, 40, 80, 160, 320, 640, 1280, 2560 USDT-TON
+- **Equal Distribution Placement**: Strict 1→2→3→4→5→6 slot filling order
+- **Direct Recurring Rewards**: Positions 3 & 4 send 100% to matrix owner
+- **Auto-Upgrade**: Position 5 automatically upgrades users to next level
+- **Re-entry System**: Position 6 triggers re-entry into sponsor's matrix
+- **TON Integration**: Ready for TON blockchain integration (currently stubbed)
+- **Cloudflare D1**: Serverless SQLite database for global distribution
+- **Modern UI**: React + TailwindCSS with responsive design
 
-- ✅ **Email/Password Authentication** with JWT tokens
-- ✅ **TON Wallet Integration** via TonConnect
-- ✅ **2×2 Community Matrix Logic** with automatic placement and spillover
-- ✅ **Referral System** with unique referral codes  
-- ✅ **Community Rewards Tracking** (Referral, Matrix, Community)
-- ✅ **Admin Dashboard** with comprehensive statistics
-- ✅ **Real-time Matrix Visualization** with beautiful UI
-- ✅ **Mobile-Responsive Design** with TailwindCSS
+## 🏗️ Architecture
 
-## 🚀 URLs
+### Tech Stack
 
-### Development
-- **Local**: http://localhost:3000
-- **Sandbox**: https://3000-inlwaau80q6uz5jkf2sig-8f57ffe2.sandbox.novita.ai
-
-### Production (After Deployment)
-- **Cloudflare Pages**: `https://ton-community-matrix.pages.dev`
-- **API Health Check**: `/api/health`
-
-## 📊 Current Status
-
-### ✅ Completed Features
-1. Full authentication system (register, login, JWT)
-2. User profile management with sponsor tracking
-3. 2×2 Community Matrix placement algorithm
-4. Breadth-first spillover logic for full matrices
-5. TON wallet connection and linking
-6. Dashboard with personal stats and referral link
-7. Matrix visualization page with hierarchical display
-8. Admin panel with system-wide statistics
-9. Contribution and reward tracking (database-ready)
-10. TON Service abstraction layer (stubbed for future smart contract integration)
-
-### 🔄 Features In Progress
-- Smart contract integration (stubbed, ready for TON contract deployment)
-- On-chain contribution verification
-- Real reward distribution via blockchain
-
-### 📋 Next Steps for Development
-1. **Deploy TON Smart Contract**: Implement the actual 2×2 matrix smart contract on TON testnet
-2. **Integrate TonService**: Replace stub methods with real TON blockchain calls
-3. **Test Contributions**: Enable real TON contributions and verify on-chain
-4. **Deploy to Production**: Deploy to Cloudflare Pages and connect production D1 database
-5. **Add Testing**: Implement unit tests for matrix placement logic
-6. **SEO Optimization**: Add meta tags and OpenGraph images
-
-## 🏗️ Technology Stack
-
-### Backend
-- **Hono** - Lightweight, fast web framework for Cloudflare Workers
+**Backend:**
+- **Hono** - Lightweight web framework for Cloudflare Workers
 - **Cloudflare D1** - Globally distributed SQLite database
-- **Drizzle ORM** - TypeScript ORM for D1
-- **JWT (jose)** - Secure authentication tokens
-- **bcryptjs** - Password hashing
+- **Drizzle ORM** - Type-safe database operations
+- **TypeScript** - Full type safety
 
-### Frontend
-- **React 18** - UI library with hooks
-- **TypeScript** - Type-safe development
-- **TailwindCSS** - Utility-first CSS framework
+**Frontend:**
+- **React 18** - Modern UI library
 - **React Router** - Client-side routing
-- **TonConnect UI React** - TON wallet integration
+- **TailwindCSS** - Utility-first CSS framework
+- **TON Connect UI** - TON wallet integration
 
-### Deployment
-- **Cloudflare Pages** - Edge-first hosting
-- **Wrangler** - Cloudflare CLI tool
-- **Vite** - Fast build tool
-- **PM2** - Process manager for local development
+**Deployment:**
+- **Cloudflare Pages** - Serverless deployment platform
+- **Wrangler** - Cloudflare development tools
 
-## 📦 Project Structure
+### Database Schema
 
 ```
-webapp/
-├── src/
-│   ├── server/              # Hono backend
-│   │   ├── db/             # Database schema and client
-│   │   ├── services/       # Business logic services
-│   │   ├── routes/         # API endpoints
-│   │   ├── middleware/     # Auth middleware
-│   │   └── index.tsx       # Server entry point
-│   ├── client/              # React frontend
-│   │   ├── pages/          # Route pages
-│   │   ├── components/     # Reusable components
-│   │   ├── contexts/       # React contexts
-│   │   ├── services/       # API client
-│   │   └── main.tsx        # Client entry point
-│   └── shared/              # Shared types and utilities
-├── migrations/              # D1 database migrations
-├── public/                  # Static assets
-├── dist/                    # Build output
-├── wrangler.jsonc          # Cloudflare configuration
-├── package.json            # Dependencies
-└── README.md               # This file
+users
+├── id, email, passwordHash, fullName
+├── username, memberCode, referralCode
+├── tonWalletAddress, tonNetwork
+└── referredById, isAdmin
+
+matrix_levels (10 levels)
+├── id, level (1-10)
+└── amount (5, 10, 20, 40, 80, 160, 320, 640, 1280, 2560)
+
+matrix_instances (one per user per level per cycle)
+├── id, userId, levelId
+├── cycleNumber
+└── status (OPEN | FILLED)
+
+matrix_positions (6 per instance)
+├── id, matrixInstanceId
+├── slotNumber (1-6)
+└── filledByUserId
+
+user_level_activations
+├── userId, levelId
+└── isActive
+
+contributions
+├── userId, levelId, amount
+├── status, txHash
+└── matrixInstanceId
+
+rewards
+├── userId, levelId, type
+├── amount, description
+└── (DIRECT | UPGRADE | REENTRY | REFERRAL)
 ```
 
-## 🔧 Data Architecture
+## 🎯 2×2 Community Matrix Rules
 
-### Database Tables (Cloudflare D1)
+### Matrix Structure
 
-#### Users
-- Stores user accounts, credentials, referral codes, TON wallets
-- Tracks sponsor relationships via `referred_by_id`
+```
+         [YOU]
+        /     \
+    [1]       [2]      ← Level 1
+   /  \       /  \
+ [3]  [5]   [4]  [6]   ← Level 2
+```
 
-#### Matrix Positions
-- Represents the 2×2 matrix structure (6 positions per user)
-- Levels: Level 1 (positions 1-2), Level 2 (positions 3-6)
-- Tracks which user fills each position
+### Slot Filling Order
 
-#### Contributions
-- Records community contributions (future on-chain transactions)
-- Tracks status: pending, confirmed, failed
-- Links to TON transaction hashes
+**STRICT ORDER:** 1 → 2 → 3 → 4 → 5 → 6
 
-#### Rewards
-- Tracks community rewards distribution
-- Types: REFERRAL, MATRIX, COMMUNITY
-- Future: Will be distributed via smart contract
+This order is enforced by the system and cannot be bypassed.
 
-### Key Services
+### Reward Distribution
 
-#### AuthService
-- User registration with unique codes generation
-- Secure password hashing
-- JWT token management
-- Profile retrieval with sponsor info
+| Position | Function | Description |
+|----------|----------|-------------|
+| **3** | **Direct Reward** | 100% goes to matrix owner as Recurring Reward |
+| **4** | **Direct Reward** | 100% goes to matrix owner as Recurring Reward |
+| **5** | **Auto-Upgrade** | If next level not activated: auto-activate it. Otherwise: Direct Reward to owner |
+| **6** | **Re-entry** | User re-enters sponsor's matrix with new cycle, gets fresh 2×2 matrix |
 
-#### MatrixService
-- 2×2 matrix initialization for new users
-- Automatic member placement
-- Breadth-first spillover when matrix is full
-- Matrix visualization data generation
+### Multi-Level System
 
-#### TonService (Stubbed)
-- Wallet linking and validation
-- Contribution intent creation (ready for smart contract)
-- Transaction verification (ready for TON Center API)
-- On-chain status queries (ready for contract integration)
+Users can activate multiple levels at registration:
+- **Example 1**: Level 1 only (5 USDT-TON)
+- **Example 2**: Levels 1+2 (5+10 = 15 USDT-TON)
+- **Example 3**: All 10 levels (5+10+20+...+2560 = 5115 USDT-TON)
+
+Each level operates independently with its own matrix structure.
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+ and npm
-- Wrangler CLI (installed via npm)
-- Git
+
+- Node.js 18+ installed
+- npm or yarn
+- Wrangler CLI (for Cloudflare)
 
 ### Installation
 
@@ -164,230 +127,246 @@ cd webapp
 # Install dependencies
 npm install
 
-# Copy environment variables
+# Set up environment variables
 cp .dev.vars.example .dev.vars
-
-# Edit .dev.vars with your secrets
-nano .dev.vars
+# Edit .dev.vars with your configuration
 ```
 
 ### Local Development
 
 ```bash
-# Build the project
-npm run build
-
 # Apply database migrations
 npm run db:migrate:local
+
+# Build the project
+npm run build
 
 # Start development server
 npm run dev:sandbox
 
-# Or use PM2 for daemon mode
+# Or use PM2 (recommended)
 pm2 start ecosystem.config.cjs
-pm2 logs ton-matrix --nostream
+pm2 logs ton-matrix
 ```
+
+The application will be available at `http://localhost:3000`
 
 ### Database Management
 
 ```bash
-# Generate new migration
-npm run db:generate
-
-# Apply migrations locally
-npm run db:migrate:local
-
-# Apply migrations to production
-npm run db:migrate:prod
-
 # Reset local database
 npm run db:reset
 
-# Open Drizzle Studio
+# View database with Drizzle Studio
 npm run db:studio
+
+# Apply migrations to production
+npm run db:migrate:prod
 ```
 
-## 📝 API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
-- `POST /api/auth/logout` - Logout user
-- `GET /api/auth/me` - Get current user profile
-
-### Matrix
-- `GET /api/matrix` - Get user's matrix view
-- `GET /api/matrix/:userId` - Get specific user's matrix (admin only)
-
-### TON Integration
-- `POST /api/ton/link-wallet` - Link TON wallet to account
-- `GET /api/ton/status` - Get TON wallet and on-chain status
-- `GET /api/ton/contract-address` - Get smart contract address
-
-### Statistics
-- `GET /api/stats/dashboard` - Get user dashboard stats
-- `GET /api/stats/contributions` - Get user's contribution history
-- `GET /api/stats/rewards` - Get user's reward history
-- `GET /api/stats/admin` - Get admin statistics (admin only)
-
-## 📖 User Guide
-
-### Joining the Community
-
-1. **Get a Referral Link**: Ask an existing member for their referral link (format: `/join?ref=ABC12345`)
-2. **Register**: Visit the referral link and fill in your details
-3. **Automatic Placement**: System automatically places you in your sponsor's 2×2 matrix
-4. **Get Your Link**: After registration, copy your referral link from the dashboard
-
-### Understanding Your Matrix
-
-Your 2×2 Community Matrix has **6 positions**:
-- **Level 1**: 2 positions (left and right under you)
-- **Level 2**: 4 positions (2 under each Level 1 position)
-
-When you invite members, they are placed in available positions from left to right, top to bottom.
-
-### Spillover System
-
-When your matrix is full (all 6 positions filled), new referrals automatically "spill over" into the first available position in your downline's matrices. This creates a cooperative community support system.
-
-### TON Wallet Connection
-
-1. **Navigate to Dashboard**
-2. **Click "Connect TON Wallet"**
-3. **Choose your TON wallet** (Tonkeeper, MyTonWallet, etc.)
-4. **Approve connection**
-5. **Wallet automatically linked** to your account
-
-### Making Contributions (Coming Soon)
-
-Once smart contracts are deployed:
-1. Connect your TON wallet
-2. Click "Make Contribution"
-3. Approve transaction in your wallet
-4. Contribution is recorded on-chain
-
-## 🔐 Security & Compliance
-
-### Wording Policy
-
-This project follows strict wording guidelines to ensure compliance:
-
-**✅ Allowed Terms:**
-- Contribution, Recurring Rewards, Referral Rewards
-- Community Support, Community Matrix
-- Decentralized Community, People Helping People
-
-**❌ Prohibited Terms:**
-- Income, Earnings, Profit, ROI
-- Investment, Passive Income, Get Rich
-- High-Yield, Interest, Financial Returns
-
-### Security Features
-- Bcrypt password hashing (10 salt rounds)
-- JWT authentication with 7-day expiration
-- SQL injection prevention via Drizzle ORM
-- TON address validation before linking
-- Admin-only endpoints protection
-
-## 🚀 Deployment
+## 📦 Deployment
 
 ### Cloudflare Pages Deployment
 
-1. **Create D1 Database**:
+1. **Create D1 Database:**
 ```bash
 npx wrangler d1 create ton-matrix-db
 # Copy the database_id to wrangler.jsonc
 ```
 
-2. **Apply Migrations to Production**:
+2. **Apply Migrations to Production:**
 ```bash
 npm run db:migrate:prod
 ```
 
-3. **Set Environment Variables**:
+3. **Set Environment Variables:**
 ```bash
-npx wrangler pages secret put JWT_SECRET --project-name ton-community-matrix
-npx wrangler pages secret put TON_NETWORK --project-name ton-community-matrix
+# Set JWT secret
+npx wrangler pages secret put JWT_SECRET
+
+# Set TON configuration
+npx wrangler pages secret put TON_NETWORK
+npx wrangler pages secret put TON_API_ENDPOINT
 ```
 
-4. **Deploy**:
+4. **Deploy:**
 ```bash
 npm run deploy:prod
 ```
 
-### Production URLs
-- Production: `https://ton-community-matrix.pages.dev`
-- Branch: `https://main.ton-community-matrix.pages.dev`
+### Environment Variables
 
-## 🧪 Testing
+Required variables in `.dev.vars` for local development:
 
-### Manual Testing Checklist
-- [ ] Register new user without referral
-- [ ] Register new user with referral code
-- [ ] Login with correct credentials
-- [ ] Login with incorrect credentials fails
-- [ ] View dashboard statistics
-- [ ] Copy and share referral link
-- [ ] Connect TON wallet
-- [ ] View 2×2 matrix visualization
-- [ ] Check matrix positions update after referral
-- [ ] Admin dashboard shows correct stats
-
-### Future: Automated Tests
-```bash
-npm test
+```env
+JWT_SECRET=your-super-secret-jwt-key-change-this
+TON_NETWORK=testnet
+TON_API_ENDPOINT=https://testnet.toncenter.com/api/v2/jsonRPC
+NODE_ENV=development
 ```
 
-## 🤝 Contributing
+## 🎨 Features Implemented
 
-This is a production system. Before contributing:
-1. Read the wording policy carefully
-2. Test locally with PM2
-3. Ensure migrations work correctly
-4. Follow TypeScript best practices
-5. Keep TON integration abstracted
+### ✅ Core Features
 
-## 📄 License
+- [x] User registration with email/password
+- [x] JWT-based authentication
+- [x] 10 Contribution Levels system
+- [x] Multi-level activation at signup
+- [x] 2×2 Matrix structure with exact 1→2→3→4→5→6 placement
+- [x] Breadth-first spillover for full matrices
+- [x] Position 3 & 4: Direct Recurring Rewards
+- [x] Position 5: Auto-Upgrade mechanism
+- [x] Position 6: Re-entry system
+- [x] TON wallet connection (TonConnect)
+- [x] Referral system with unique codes
+- [x] Admin dashboard with statistics
+- [x] Matrix visualization UI
 
-This project is private and proprietary.
+### 🔄 Matrix Logic
 
-## 🆘 Support & Contact
+The matrix placement algorithm implements:
+1. **Equal Distribution**: Always fills 1→2→3→4→5→6 in order
+2. **Spillover**: BFS algorithm finds next available matrix when sponsor's is full
+3. **Cycle Tracking**: Each re-entry creates a new cycle number
+4. **Level Independence**: Each contribution level has separate matrix instances
 
-For technical questions or issues:
-1. Check the logs: `pm2 logs ton-matrix --nostream`
-2. Review Wrangler logs: `~/.config/.wrangler/logs/`
-3. Test API health: `curl http://localhost:3000/api/health`
+### 💰 Reward System
+
+| Reward Type | Trigger | Amount | Description |
+|-------------|---------|---------|-------------|
+| DIRECT | Position 3, 4 | 100% | Direct Recurring Reward to matrix owner |
+| UPGRADE | Position 5 | 100% | Auto-activates next level or direct reward |
+| REENTRY | Position 6 | 100% | Re-enters user into sponsor's matrix |
+| REFERRAL | New signup | Variable | Referral bonus for sponsor |
 
 ## 🎯 Roadmap
 
-### Phase 1: Current (✅ Complete)
-- Full authentication system
-- 2×2 matrix logic and placement
-- Frontend UI with matrix visualization
-- TON wallet connection
-- Database schema and migrations
+### Phase 1: Foundation (✅ Complete)
+- [x] Project setup with Hono + React + D1
+- [x] 10 Contribution Levels system
+- [x] Equal distribution placement algorithm
+- [x] Auto-upgrade and re-entry logic
+- [x] TON wallet integration (stubbed)
+- [x] Basic UI with matrix visualization
 
-### Phase 2: Smart Contract Integration (🔄 In Progress)
-- Deploy TON smart contract
-- Integrate real contribution flow
-- On-chain reward distribution
-- Transaction verification
+### Phase 2: TON Integration (🚧 In Progress)
+- [ ] Smart contract deployment on TON testnet
+- [ ] USDT-TON contribution processing
+- [ ] On-chain transaction verification
+- [ ] Real-time reward distribution
+- [ ] TON Center API integration
 
-### Phase 3: Production Launch
-- Security audit
-- Performance optimization
-- User documentation
-- Marketing materials
+### Phase 3: Advanced Features
+- [ ] Real-time notifications
+- [ ] Transaction history with TON explorer links
+- [ ] Advanced analytics dashboard
+- [ ] Multi-language support
+- [ ] Mobile-responsive improvements
 
-### Phase 4: Advanced Features
-- Multi-matrix system
-- Advanced analytics
-- Mobile app
-- Internationalization
+### Phase 4: Production Ready
+- [ ] Security audit
+- [ ] Performance optimization
+- [ ] Comprehensive testing
+- [ ] Documentation completion
+- [ ] Mainnet deployment
+
+## 📚 API Documentation
+
+### Authentication
+
+```http
+POST /api/auth/register
+POST /api/auth/login
+POST /api/auth/logout
+GET  /api/me
+```
+
+### Matrix
+
+```http
+GET  /api/matrix/levels
+GET  /api/matrix/user-levels
+GET  /api/matrix/:levelId
+GET  /api/matrix/user/:userId/level/:levelId (admin)
+```
+
+### TON
+
+```http
+POST /api/ton/link-wallet
+GET  /api/ton/status
+GET  /api/ton/contract-address
+```
+
+### Statistics
+
+```http
+GET  /api/stats/dashboard
+GET  /api/stats/contributions
+GET  /api/stats/rewards
+GET  /api/stats/admin (admin)
+```
+
+## 🧪 Testing
+
+```bash
+# Run type checking
+npm run typecheck
+
+# Run tests
+npm test
+```
+
+## 📖 Compliance & Wording
+
+This project uses specific, compliant terminology:
+
+✅ **Allowed Terms:**
+- Contribution, Community Rewards
+- Referral Rewards, Recurring Rewards
+- 2×2 Community Matrix
+- People helping people
+- Community Support
+- Multi-level community support system
+
+❌ **Prohibited Terms:**
+- Income, Earnings, Profit
+- ROI, Investment
+- Passive income, Get rich
+- High-yield
+
+## 🤝 Contributing
+
+This is a demonstration project. For production use, please:
+1. Complete TON smart contract integration
+2. Conduct security audit
+3. Add comprehensive testing
+4. Review and update all configurations
+
+## 📄 License
+
+[Specify your license here]
+
+## 🔗 Links
+
+- **TON Documentation**: https://docs.ton.org
+- **Cloudflare D1**: https://developers.cloudflare.com/d1
+- **Hono Framework**: https://hono.dev
+- **TonConnect**: https://github.com/ton-connect
+
+## ⚠️ Important Notes
+
+1. **Development Status**: This application is currently in development. The TON integration is stubbed and needs to be completed before production use.
+
+2. **Smart Contract**: A TON smart contract must be deployed and integrated to handle real USDT-TON transactions.
+
+3. **Security**: Review all security aspects, especially authentication and payment processing, before deploying to production.
+
+4. **Testing**: Thoroughly test all matrix placement logic, especially edge cases with spillover and re-entry.
+
+5. **Compliance**: Ensure all legal and regulatory requirements are met in your jurisdiction before launching.
 
 ---
 
-**Built with ❤️ for the TON community**
-
-*Last Updated: 2024-11-25*
+**Built with ❤️ for the TON Community**
