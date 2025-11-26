@@ -43,7 +43,46 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Contribution Intro Section (NEW) */}
+      {/* Accessible for Everyone Section */}
+      <section className="py-16 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 text-gray-900 dark:text-white">
+            {t.home.accessibleTitle}
+          </h2>
+          
+          <div className="space-y-6 text-lg text-gray-700 dark:text-gray-300">
+            <p className="leading-relaxed">
+              {t.home.accessiblePara1}
+            </p>
+            
+            <p className="leading-relaxed">
+              {t.home.accessiblePara2}
+            </p>
+            
+            <div className="text-center py-4">
+              <p className="text-2xl md:text-3xl font-bold text-ton-blue dark:text-blue-400">
+                {t.home.accessibleTruth}
+              </p>
+            </div>
+            
+            <p className="leading-relaxed">
+              {t.home.accessiblePara3}
+            </p>
+            
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border-2 border-ton-blue shadow-lg">
+              <p className="text-xl md:text-2xl font-bold text-center text-gray-900 dark:text-white">
+                {t.home.accessibleCore}
+              </p>
+            </div>
+            
+            <p className="leading-relaxed">
+              {t.home.accessiblePara4}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Contribution Intro Section */}
       <section className="py-12 bg-blue-50 dark:bg-gray-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
