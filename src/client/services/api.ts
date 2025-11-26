@@ -107,6 +107,13 @@ class ApiClient {
     return this.request<MatrixView>(`/matrix/${userId}`)
   }
 
+  async activateLevels(levels: number[]) {
+    return this.request<{ activatedLevels: number[]; message: string }>('/matrix/activate-levels', {
+      method: 'POST',
+      body: JSON.stringify({ levels })
+    })
+  }
+
   // TON endpoints
   async linkWallet(data: LinkWalletRequest) {
     return this.request('/ton/link-wallet', {

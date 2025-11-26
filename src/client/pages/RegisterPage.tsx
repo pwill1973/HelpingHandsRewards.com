@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useLanguage } from '../contexts/LanguageContext'
+import { api } from '../services/api'
 
 const CONTRIBUTION_LEVELS = [
   { id: 1, amount: 5, description: 'Entry door into the community' },
@@ -32,10 +33,12 @@ export default function RegisterPage() {
   })
   const [showLevelSelector, setShowLevelSelector] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
   const [authLoading, setAuthLoading] = useState(false)
+  const [activateLoading, setActivateLoading] = useState(false)
   
-  const { register, authenticateUser } = useAuth()
+  const { register, authenticateUser, isAuthenticated } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -149,6 +152,53 @@ export default function RegisterPage() {
 
   const deselectAllLevels = () => {
     setFormData(prev => ({ ...prev, selectedLevels: [1] }))
+  }
+
+  const handleActivateLevels = async () => {
+    setError('')
+    setSuccess('')
+    
+    // Validate that at least one level is selected
+    if (formData.selectedLevels.length === 0) {
+      setError(t.register.noLevelsSelected)
+      return
+    }
+    
+    // If not authenticated, trigger auth flow first
+    if (!isAuthenticated) {
+      setAuthLoading(true)
+      try {
+        await authenticateUser()
+        // After successful auth, proceed with activation
+        await activateLevelsDirectly()
+      } catch (err: any) {
+        setError(err.message || t.register.authenticationFailed)
+      } finally {
+        setAuthLoading(false)
+      }
+    } else {
+      // Already authenticated, activate directly
+      await activateLevelsDirectly()
+    }
+  }
+
+  const activateLevelsDirectly = async () => {
+    setActivateLoading(true)
+    try {
+      const response = await api.activateLevels(formData.selectedLevels)
+      
+      if (response.success) {
+        setSuccess(t.register.activationSuccess)
+        // Redirect to dashboard after brief delay
+        setTimeout(() => {
+          navigate('/dashboard')
+        }, 1500)
+      }
+    } catch (err: any) {
+      setError(err.message || t.register.activationError)
+    } finally {
+      setActivateLoading(false)
+    }
   }
 
   const totalContribution = formData.selectedLevels.reduce((sum, levelId) => {
@@ -275,6 +325,29 @@ export default function RegisterPage() {
                 {t.register.selectedLevels}: {formData.selectedLevels.length}
               </div>
             </div>
+          </div>
+
+          {/* Activate Button - Primary CTA */}
+          <div className="mt-6">
+            <button
+              type="button"
+              onClick={handleActivateLevels}
+              disabled={activateLoading || authLoading || formData.selectedLevels.length === 0}
+              className="w-full btn-primary text-lg py-4 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-[1.02] active:scale-[0.98]"
+            >
+              {activateLoading || authLoading 
+                ? t.register.activating 
+                : isAuthenticated 
+                  ? t.register.activateButton_member 
+                  : t.register.activateButton_guest
+              }
+            </button>
+            
+            {success && (
+              <div className="mt-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200 px-4 py-3 rounded-lg text-center">
+                {success}
+              </div>
+            )}
           </div>
         </div>
 

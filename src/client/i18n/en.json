@@ -190,7 +190,13 @@
     "selectedLevels": "Selected Levels",
     "fullPotentialTitle": "Full Potential: 15,420 USDT-TON",
     "fullPotentialDescription": "When all 10 Contribution Levels are active, each completed cycle across all 2×2 Community Matrices generates 15,420 USDT-TON in Recurring Rewards. This is achieved through duplication, where inviting 2 or MORE people who each invite 2 or MORE creates continuous matrix activity and unlocks the auto-upgrade system.",
-    "fullPotentialDisclaimer": "No guarantees, no promises. Your Recurring Rewards depend entirely on your participation and the activity of the wider community."
+    "fullPotentialDisclaimer": "No guarantees, no promises. Your Recurring Rewards depend entirely on your participation and the activity of the wider community.",
+    "activateButton_guest": "Activate & Join the Community",
+    "activateButton_member": "Activate Selected Levels",
+    "activating": "Activating...",
+    "activationSuccess": "Contribution Levels activated successfully!",
+    "activationError": "Failed to activate levels. Please try again.",
+    "noLevelsSelected": "Please select at least one level to activate"
   },
   "login": {
     "title": "Welcome Back",

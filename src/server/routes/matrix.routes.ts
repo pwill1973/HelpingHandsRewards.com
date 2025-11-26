@@ -120,6 +120,89 @@ matrixRoutes.get('/:levelId', authMiddleware, async (c) => {
 })
 
 /**
+ * POST /api/matrix/activate-levels
+ * Activate multiple contribution levels for authenticated user
+ * 
+ * WALLET-FIRST: User is identified by ton_wallet_address (via userId)
+ * This creates matrix instances for each selected level
+ */
+matrixRoutes.post('/activate-levels', authMiddleware, async (c) => {
+  try {
+    const user = c.get('user')
+    const body = await c.req.json()
+    
+    if (!body.levels || !Array.isArray(body.levels) || body.levels.length === 0) {
+      return c.json({
+        success: false,
+        error: 'No levels provided'
+      }, 400)
+    }
+    
+    const levels: number[] = body.levels
+    
+    // Validate all levels are numbers between 1-10
+    for (const level of levels) {
+      if (!Number.isInteger(level) || level < 1 || level > 10) {
+        return c.json({
+          success: false,
+          error: `Invalid level: ${level}. Must be between 1 and 10.`
+        }, 400)
+      }
+    }
+    
+    // Validate sequential activation rule
+    const sortedLevels = [...levels].sort((a, b) => a - b)
+    for (let i = 0; i < sortedLevels.length; i++) {
+      const expectedLevel = i + 1
+      if (sortedLevels[i] !== expectedLevel) {
+        return c.json({
+          success: false,
+          error: `Levels must be activated sequentially starting from Level 1. Missing Level ${expectedLevel}.`
+        }, 400)
+      }
+    }
+    
+    const db = createDbClient(c.env.DB)
+    const matrixService = new MatrixService(db)
+    
+    // Get corresponding level IDs from level numbers
+    const levelRecords = await db.query.matrixLevels.findMany({
+      orderBy: (levels, { asc }) => [asc(levels.level)]
+    })
+    
+    const levelIdMap = new Map(levelRecords.map(l => [l.level, l.id]))
+    const levelIdsToActivate = levels.map(levelNum => levelIdMap.get(levelNum)).filter(Boolean) as number[]
+    
+    if (levelIdsToActivate.length !== levels.length) {
+      return c.json({
+        success: false,
+        error: 'Some levels not found in system'
+      }, 500)
+    }
+    
+    // Initialize matrices for all selected levels
+    await matrixService.initializeUserMatrices(user.id, levelIdsToActivate)
+    
+    // Get updated activated levels
+    const activatedLevels = await matrixService.getUserActivatedLevels(user.id)
+    
+    return c.json({
+      success: true,
+      data: {
+        activatedLevels,
+        message: `Successfully activated ${levels.length} Contribution Level${levels.length > 1 ? 's' : ''}`
+      }
+    })
+  } catch (error: any) {
+    console.error('Level activation error:', error)
+    return c.json({
+      success: false,
+      error: error.message || 'Failed to activate levels'
+    }, 500)
+  }
+})
+
+/**
  * GET /api/matrix/user/:userId/level/:levelId
  * Get specific user's matrix view (admin only)
  */

@@ -190,7 +190,13 @@
     "selectedLevels": "Niveaux Sélectionnés",
     "fullPotentialTitle": "Plein Potentiel : 15 420 USDT-TON",
     "fullPotentialDescription": "Lorsque les 10 Niveaux de Contribution sont actifs, chaque cycle complété à travers toutes les Matrices Communautaires 2×2 génère 15 420 USDT-TON en Récompenses Récurrentes. Ceci est réalisé grâce à la duplication, où inviter 2 personnes ou PLUS qui invitent chacune 2 personnes ou PLUS crée une activité matricielle continue et débloque le système d'évolution automatique.",
-    "fullPotentialDisclaimer": "Aucune garantie, aucune promesse. Vos Récompenses Récurrentes dépendent entièrement de votre participation et de l'activité de la communauté."
+    "fullPotentialDisclaimer": "Aucune garantie, aucune promesse. Vos Récompenses Récurrentes dépendent entièrement de votre participation et de l'activité de la communauté.",
+    "activateButton_guest": "Activer et Rejoindre la Communauté",
+    "activateButton_member": "Activer les Niveaux Sélectionnés",
+    "activating": "Activation en cours...",
+    "activationSuccess": "Niveaux de Contribution activés avec succès !",
+    "activationError": "Échec de l'activation des niveaux. Veuillez réessayer.",
+    "noLevelsSelected": "Veuillez sélectionner au moins un niveau à activer"
   },
   "login": {
     "title": "Bienvenue",
