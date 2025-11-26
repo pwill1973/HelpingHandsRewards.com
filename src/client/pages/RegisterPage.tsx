@@ -100,14 +100,47 @@ export default function RegisterPage() {
     }
   }
 
+  // Check if a level can be selected (sequential rule)
+  const canSelectLevel = (levelId: number): boolean => {
+    if (levelId === 1) return true
+    // Check if all previous levels are selected
+    for (let i = 1; i < levelId; i++) {
+      if (!formData.selectedLevels.includes(i)) {
+        return false
+      }
+    }
+    return true
+  }
+
   const toggleLevel = (levelId: number) => {
-    setFormData(prev => {
-      const levels = prev.selectedLevels.includes(levelId)
-        ? prev.selectedLevels.filter(id => id !== levelId)
-        : [...prev.selectedLevels, levelId].sort((a, b) => a - b)
-      
-      return { ...prev, selectedLevels: levels.length > 0 ? levels : [1] }
-    })
+    const isSelected = formData.selectedLevels.includes(levelId)
+    const canSelect = canSelectLevel(levelId)
+
+    if (isSelected) {
+      // Deselecting: Remove this level and all levels above it
+      setFormData(prev => {
+        const levels = prev.selectedLevels.filter(id => id < levelId)
+        return { ...prev, selectedLevels: levels.length > 0 ? levels : [1] }
+      })
+    } else {
+      // Selecting: Only allow if sequential rule is met
+      if (canSelect) {
+        setFormData(prev => {
+          const levels = [...prev.selectedLevels, levelId].sort((a, b) => a - b)
+          return { ...prev, selectedLevels: levels }
+        })
+      } else {
+        // Show error message
+        const missingLevels: number[] = []
+        for (let i = 1; i < levelId; i++) {
+          if (!formData.selectedLevels.includes(i)) {
+            missingLevels.push(i)
+          }
+        }
+        const message = `You must first activate Level${missingLevels.length > 1 ? 's' : ''} ${missingLevels.join(', ')} before activating Level ${levelId}.`
+        setError(message)
+      }
+    }
   }
 
   const selectAllLevels = () => {
@@ -141,47 +174,72 @@ export default function RegisterPage() {
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
             {t.register.contributionLevelsTitle}
           </h2>
-          <p className="text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
+          <p className="text-gray-700 dark:text-gray-300 mb-2 leading-relaxed">
             {t.register.contributionLevelsSubtitle}
+          </p>
+          <p className="text-sm text-red-600 dark:text-red-400 font-semibold mb-6">
+            {t.register.sequentialNote}
           </p>
 
           {/* Level Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-            {CONTRIBUTION_LEVELS.map((level) => (
-              <button
-                key={level.id}
-                type="button"
-                onClick={() => toggleLevel(level.id)}
-                className={`p-4 rounded-lg border-2 transition-all text-left ${
-                  formData.selectedLevels.includes(level.id)
-                    ? 'border-ton-blue bg-blue-50 dark:bg-blue-900/20'
-                    : 'border-gray-300 dark:border-gray-600 hover:border-ton-blue'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-bold text-gray-600 dark:text-gray-400">
-                    {t.common.level} {level.id}
-                  </span>
-                  <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
-                    formData.selectedLevels.includes(level.id)
-                      ? 'border-ton-blue bg-ton-blue'
-                      : 'border-gray-300 dark:border-gray-600'
-                  }`}>
-                    {formData.selectedLevels.includes(level.id) && (
-                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
+            {CONTRIBUTION_LEVELS.map((level) => {
+              const isSelected = formData.selectedLevels.includes(level.id)
+              const canSelect = canSelectLevel(level.id)
+              const isDisabled = !isSelected && !canSelect
+              
+              return (
+                <button
+                  key={level.id}
+                  type="button"
+                  onClick={() => toggleLevel(level.id)}
+                  disabled={isDisabled}
+                  className={`p-4 rounded-lg border-2 transition-all text-left ${
+                    isSelected
+                      ? 'border-ton-blue bg-blue-50 dark:bg-blue-900/20'
+                      : isDisabled
+                        ? 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 opacity-50 cursor-not-allowed'
+                        : 'border-gray-300 dark:border-gray-600 hover:border-ton-blue'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className={`text-sm font-bold ${
+                      isDisabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-600 dark:text-gray-400'
+                    }`}>
+                      {t.common.level} {level.id}
+                    </span>
+                    <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                      isSelected
+                        ? 'border-ton-blue bg-ton-blue'
+                        : isDisabled
+                          ? 'border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700'
+                          : 'border-gray-300 dark:border-gray-600'
+                    }`}>
+                      {isSelected && (
+                        <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                      {isDisabled && !isSelected && (
+                        <svg className="w-3 h-3 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                      )}
+                    </div>
                   </div>
-                </div>
-                <div className="text-2xl font-bold text-ton-blue mb-1">
-                  {level.amount}
-                </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
-                  {t.common.usdt_ton}
-                </div>
-              </button>
-            ))}
+                  <div className={`text-2xl font-bold mb-1 ${
+                    isDisabled ? 'text-gray-400 dark:text-gray-500' : 'text-ton-blue'
+                  }`}>
+                    {level.amount}
+                  </div>
+                  <div className={`text-xs ${
+                    isDisabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-500 dark:text-gray-400'
+                  }`}>
+                    {t.common.usdt_ton}
+                  </div>
+                </button>
+              )
+            })}
           </div>
 
           {/* Select All / Deselect All */}

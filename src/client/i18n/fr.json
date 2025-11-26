@@ -127,6 +127,7 @@
     "registrationFailed": "L'inscription a échoué",
     "contributionLevelsTitle": "Choisissez vos Niveaux de Contribution",
     "contributionLevelsSubtitle": "Commencez avec n'importe quelle combinaison. Vous pouvez toujours évoluer plus tard grâce à l'activité communautaire.",
+    "sequentialNote": "⚠️ Vous devez activer les niveaux séquentiellement (par exemple, vous ne pouvez pas activer le Niveau 5 sans d'abord activer les Niveaux 1-4).",
     "autoUpgradeTitle": "Système d'Évolution Automatique",
     "autoUpgradeDescription": "L'évolution automatique vous aide à passer de 5 USDT-TON jusqu'à 2560 USDT-TON au fil du temps, en fonction de l'activité communautaire. Cela se produit automatiquement grâce à la structure de la Matrice Communautaire 2×2.",
     "duplicationTitle": "Pourquoi inviter 2 personnes ou PLUS est important",

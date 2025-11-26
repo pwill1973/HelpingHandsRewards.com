@@ -127,6 +127,7 @@
     "registrationFailed": "Registration failed",
     "contributionLevelsTitle": "Choose Your Contribution Levels",
     "contributionLevelsSubtitle": "Start with any combination. You can always upgrade later through community activity.",
+    "sequentialNote": "⚠️ You must activate levels sequentially (e.g., you cannot activate Level 5 without first activating Levels 1-4).",
     "autoUpgradeTitle": "Auto-Upgrade System",
     "autoUpgradeDescription": "Auto-upgrade helps you move from 5 USDT-TON all the way up to 2560 USDT-TON over time, based on community activity. This happens automatically through the structure of the 2×2 Community Matrix.",
     "duplicationTitle": "Why inviting 2 or MORE matters",

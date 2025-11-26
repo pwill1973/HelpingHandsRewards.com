@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HelpingHandsRewards - EN/FR Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .ton-blue { color: #0098EA; }
+        .bg-ton-blue { background-color: #0098EA; }
+        .border-ton-blue { border-color: #0098EA; }
+        .btn-primary {
+            @apply bg-ton-blue text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-600 transition-all;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg"></div>
+                    <span class="ml-2 text-xl font-bold text-gray-900" id="logo-text">
+                        2×2 Community Matrix
+                    </span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <!-- Language Switcher -->
+                    <div class="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+                        <button onclick="switchLanguage('en')" id="btn-en" class="px-3 py-1 rounded-md text-sm font-medium bg-white text-blue-600 shadow-sm">
+                            EN
+                        </button>
+                        <button onclick="switchLanguage('fr')" id="btn-fr" class="px-3 py-1 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
+                            FR
+                        </button>
+                    </div>
+                    <a href="#" class="text-gray-700 hover:text-blue-600" id="nav-login">Sign in</a>
+                    <a href="#register" class="bg-ton-blue text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-600" id="nav-join">
+                        Join the Community
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 text-white py-20">
+        <div class="relative max-w-7xl mx-auto px-4 text-center">
+            <h1 class="text-5xl font-bold mb-6" id="hero-title">HelpingHandsRewards.com</h1>
+            <p class="text-xl mb-4" id="hero-subtitle">
+                A 2×2 Community Matrix powered by people helping people on TON
+            </p>
+            <p class="text-lg mb-8 max-w-3xl mx-auto" id="hero-description">
+                Start with a simple Contribution in USDT-TON. Join a global community where support and Recurring Rewards flow through a transparent 2×2 Community Matrix.
+            </p>
+            <a href="#register" class="bg-white text-blue-600 hover:bg-gray-100 font-bold py-4 px-8 rounded-lg text-lg transition-all shadow-lg" id="hero-cta">
+                Join the Community
+            </a>
+            <p class="text-sm mt-6 text-blue-100 max-w-2xl mx-auto" id="hero-disclaimer">
+                <strong>Important:</strong> No guarantees, no promises. Your Recurring Rewards depend on your own participation and the activity of your community.
+            </p>
+        </div>
+    </section>
+
+    <!-- Contribution Intro -->
+    <section class="py-12 bg-blue-50">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <p class="text-lg text-gray-700 leading-relaxed" id="contribution-intro">
+                You may start with a Contribution of 5 USDT-TON, or activate multiple Contribution Levels from the beginning. The long-term goal is to be active across all 10 Contribution Levels.
+            </p>
+        </div>
+    </section>
+
+    <!-- RegisterPage -->
+    <section id="register" class="py-12 bg-gray-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <!-- Header -->
+            <div class="text-center mb-12">
+                <h1 class="text-4xl font-bold text-gray-900 mb-4" id="register-title">Join the Community</h1>
+                <p class="text-xl text-gray-600" id="register-subtitle">Start your journey in the 2×2 Community Matrix</p>
+            </div>
+
+            <!-- Contribution Levels Explanation -->
+            <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6" id="levels-title">Choose Your Contribution Levels</h2>
+                <p class="text-gray-700 mb-2 leading-relaxed" id="levels-subtitle">
+                    Start with any combination. You can always upgrade later through community activity.
+                </p>
+                <p class="text-sm text-red-600 font-semibold mb-6" id="sequential-note">
+                    ⚠️ You must activate levels sequentially (e.g., you cannot activate Level 5 without first activating Levels 1-4).
+                </p>
+
+                <!-- Level Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-6" id="level-grid">
+                    <!-- Levels will be populated by JS -->
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex gap-4 mb-6">
+                    <button onclick="selectSequential(10)" class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition-all text-sm font-medium" id="btn-select-all">
+                        Select All 10 Levels
+                    </button>
+                    <button onclick="deselectAll()" class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition-all text-sm font-medium" id="btn-deselect-all">
+                        Deselect All
+                    </button>
+                </div>
+
+                <!-- Total -->
+                <div class="bg-blue-50 rounded-lg p-4">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="text-sm text-gray-600 mb-1" id="total-label">Total Contribution</div>
+                            <div class="text-3xl font-bold text-blue-600">
+                                <span id="total-amount">5</span> USDT-TON
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            <span id="selected-label">Selected Levels:</span> <span id="selected-count">1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Auto-Upgrade -->
+            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4" id="auto-title">Auto-Upgrade System</h2>
+                <p class="text-gray-700 leading-relaxed" id="auto-desc">
+                    Auto-upgrade helps you move from 5 USDT-TON all the way up to 2560 USDT-TON over time, based on community activity. This happens automatically through the structure of the 2×2 Community Matrix.
+                </p>
+            </div>
+
+            <!-- Duplication -->
+            <div class="bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl p-8 mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4" id="dup-title">Why inviting 2 or MORE matters</h2>
+                <p class="text-gray-700 leading-relaxed mb-4" id="dup-desc">
+                    Every Contribution Level has a 2×2 Community Matrix. When you invite 2 or MORE, and they each invite 2 or MORE, this creates duplication. Duplication creates continuous activity in the Community Matrix. This sets the stage for unlimited cycling and unlimited potential in the Rewards members can receive.
+                </p>
+                <div class="bg-white/50 rounded-lg p-4">
+                    <p class="text-sm text-gray-600 font-medium" id="dup-disclaimer">
+                        No guarantees, no promises. Your Rewards depend entirely on your participation and the activity of the wider community.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const LEVELS = [
+            { id: 1, amount: 5 },
+            { id: 2, amount: 10 },
+            { id: 3, amount: 20 },
+            { id: 4, amount: 40 },
+            { id: 5, amount: 80 },
+            { id: 6, amount: 160 },
+            { id: 7, amount: 320 },
+            { id: 8, amount: 640 },
+            { id: 9, amount: 1280 },
+            { id: 10, amount: 2560 }
+        ];
+
+        let selectedLevels = [1];
+        let currentLanguage = 'en';
+
+        const translations = {
+            en: {
+                'logo-text': '2×2 Community Matrix',
+                'nav-login': 'Sign in',
+                'nav-join': 'Join the Community',
+                'hero-title': 'HelpingHandsRewards.com',
+                'hero-subtitle': 'A 2×2 Community Matrix powered by people helping people on TON',
+                'hero-description': 'Start with a simple Contribution in USDT-TON. Join a global community where support and Recurring Rewards flow through a transparent 2×2 Community Matrix.',
+                'hero-cta': 'Join the Community',
+                'hero-disclaimer': '<strong>Important:</strong> No guarantees, no promises. Your Recurring Rewards depend on your own participation and the activity of your community.',
+                'contribution-intro': 'You may start with a Contribution of 5 USDT-TON, or activate multiple Contribution Levels from the beginning. The long-term goal is to be active across all 10 Contribution Levels.',
+                'register-title': 'Join the Community',
+                'register-subtitle': 'Start your journey in the 2×2 Community Matrix',
+                'levels-title': 'Choose Your Contribution Levels',
+                'levels-subtitle': 'Start with any combination. You can always upgrade later through community activity.',
+                'sequential-note': '⚠️ You must activate levels sequentially (e.g., you cannot activate Level 5 without first activating Levels 1-4).',
+                'btn-select-all': 'Select All 10 Levels',
+                'btn-deselect-all': 'Deselect All',
+                'total-label': 'Total Contribution',
+                'selected-label': 'Selected Levels:',
+                'auto-title': 'Auto-Upgrade System',
+                'auto-desc': 'Auto-upgrade helps you move from 5 USDT-TON all the way up to 2560 USDT-TON over time, based on community activity. This happens automatically through the structure of the 2×2 Community Matrix.',
+                'dup-title': 'Why inviting 2 or MORE matters',
+                'dup-desc': 'Every Contribution Level has a 2×2 Community Matrix. When you invite 2 or MORE, and they each invite 2 or MORE, this creates duplication. Duplication creates continuous activity in the Community Matrix. This sets the stage for unlimited cycling and unlimited potential in the Rewards members can receive.',
+                'dup-disclaimer': 'No guarantees, no promises. Your Rewards depend entirely on your participation and the activity of the wider community.'
+            },
+            fr: {
+                'logo-text': 'Matrice Communautaire 2×2',
+                'nav-login': 'Se connecter',
+                'nav-join': 'Rejoindre la Communauté',
+                'hero-title': 'HelpingHandsRewards.com',
+                'hero-subtitle': 'Une Matrice Communautaire 2×2 propulsée par l\'entraide sur TON',
+                'hero-description': 'Commencez avec une simple Contribution en USDT-TON. Rejoignez une communauté mondiale où le soutien et les Récompenses Récurrentes circulent à travers une Matrice Communautaire 2×2 transparente.',
+                'hero-cta': 'Rejoindre la Communauté',
+                'hero-disclaimer': '<strong>Important :</strong> Aucune garantie, aucune promesse. Vos Récompenses Récurrentes dépendent entièrement de votre participation et de l\'activité de la communauté.',
+                'contribution-intro': 'Vous pouvez commencer avec une Contribution de 5 USDT-TON, ou activer plusieurs Niveaux de Contribution dès le début. L\'objectif à long terme est d\'être actif sur les 10 Niveaux de Contribution.',
+                'register-title': 'Rejoindre la Communauté',
+                'register-subtitle': 'Commencez votre parcours dans la Matrice Communautaire 2×2',
+                'levels-title': 'Choisissez vos Niveaux de Contribution',
+                'levels-subtitle': 'Commencez avec n\'importe quelle combinaison. Vous pouvez toujours évoluer plus tard grâce à l\'activité communautaire.',
+                'sequential-note': '⚠️ Vous devez activer les niveaux séquentiellement (par exemple, vous ne pouvez pas activer le Niveau 5 sans d\'abord activer les Niveaux 1-4).',
+                'btn-select-all': 'Sélectionner les 10 Niveaux',
+                'btn-deselect-all': 'Tout désélectionner',
+                'total-label': 'Contribution Totale',
+                'selected-label': 'Niveaux Sélectionnés :',
+                'auto-title': 'Système d\'Évolution Automatique',
+                'auto-desc': 'L\'évolution automatique vous aide à passer de 5 USDT-TON jusqu\'à 2560 USDT-TON au fil du temps, en fonction de l\'activité communautaire. Cela se produit automatiquement grâce à la structure de la Matrice Communautaire 2×2.',
+                'dup-title': 'Pourquoi inviter 2 personnes ou PLUS est important',
+                'dup-desc': 'Chaque Niveau de Contribution a une Matrice Communautaire 2×2. Lorsque vous invitez 2 personnes ou PLUS, et qu\'elles invitent chacune 2 personnes ou PLUS, cela crée une duplication. La duplication crée une activité continue dans la Matrice Communautaire. Cela ouvre la voie à un cycle illimité et un potentiel illimité dans les Récompenses que les membres peuvent recevoir.',
+                'dup-disclaimer': 'Aucune garantie, aucune promesse. Vos Récompenses dépendent entièrement de votre participation et de l\'activité de la communauté.'
+            }
+        };
+
+        function switchLanguage(lang) {
+            currentLanguage = lang;
+            
+            // Update button states
+            document.getElementById('btn-en').className = lang === 'en' 
+                ? 'px-3 py-1 rounded-md text-sm font-medium bg-white text-blue-600 shadow-sm'
+                : 'px-3 py-1 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900';
+            
+            document.getElementById('btn-fr').className = lang === 'fr'
+                ? 'px-3 py-1 rounded-md text-sm font-medium bg-white text-blue-600 shadow-sm'
+                : 'px-3 py-1 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900';
+            
+            // Update all text
+            Object.keys(translations[lang]).forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.innerHTML = translations[lang][id];
+                }
+            });
+            
+            // Re-render levels to update text
+            renderLevels();
+        }
+
+        // NEW: Sequential validation logic
+        function canSelectLevel(levelId) {
+            // Level 1 is always selectable
+            if (levelId === 1) return true;
+            
+            // Check if all previous levels are selected
+            for (let i = 1; i < levelId; i++) {
+                if (!selectedLevels.includes(i)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function toggleLevel(levelId) {
+            const canSelect = canSelectLevel(levelId);
+            const isSelected = selectedLevels.includes(levelId);
+            
+            if (isSelected) {
+                // Deselecting: Remove this level and all levels above it
+                selectedLevels = selectedLevels.filter(id => id < levelId);
+                if (selectedLevels.length === 0) {
+                    selectedLevels = [1];
+                }
+            } else {
+                // Selecting: Only allow if sequential rule is met
+                if (canSelect) {
+                    selectedLevels.push(levelId);
+                    selectedLevels.sort((a, b) => a - b);
+                } else {
+                    // Show error message
+                    const missingLevels = [];
+                    for (let i = 1; i < levelId; i++) {
+                        if (!selectedLevels.includes(i)) {
+                            missingLevels.push(i);
+                        }
+                    }
+                    const message = currentLanguage === 'en' 
+                        ? `You must first activate Level${missingLevels.length > 1 ? 's' : ''} ${missingLevels.join(', ')} before activating Level ${levelId}.`
+                        : `Vous devez d'abord activer le${missingLevels.length > 1 ? 's' : ''} Niveau${missingLevels.length > 1 ? 'x' : ''} ${missingLevels.join(', ')} avant d'activer le Niveau ${levelId}.`;
+                    alert(message);
+                }
+            }
+            renderLevels();
+            updateTotal();
+        }
+
+        function selectSequential(upToLevel) {
+            // Select all levels from 1 to upToLevel
+            selectedLevels = [];
+            for (let i = 1; i <= upToLevel; i++) {
+                selectedLevels.push(i);
+            }
+            renderLevels();
+            updateTotal();
+        }
+
+        function deselectAll() {
+            selectedLevels = [1];
+            renderLevels();
+            updateTotal();
+        }
+
+        function renderLevels() {
+            const grid = document.getElementById('level-grid');
+            grid.innerHTML = LEVELS.map(level => {
+                const isSelected = selectedLevels.includes(level.id);
+                const canSelect = canSelectLevel(level.id);
+                const isDisabled = !isSelected && !canSelect;
+                
+                return `
+                    <button 
+                        onclick="toggleLevel(${level.id})"
+                        class="p-4 rounded-lg border-2 transition-all text-left ${
+                            isSelected 
+                                ? 'border-blue-600 bg-blue-50' 
+                                : isDisabled
+                                    ? 'border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed'
+                                    : 'border-gray-300 hover:border-blue-600'
+                        }"
+                        ${isDisabled ? 'disabled' : ''}
+                    >
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-bold ${isDisabled ? 'text-gray-400' : 'text-gray-600'}">
+                                ${currentLanguage === 'en' ? 'Level' : 'Niveau'} ${level.id}
+                            </span>
+                            <div class="w-5 h-5 rounded border-2 flex items-center justify-center ${
+                                isSelected 
+                                    ? 'border-blue-600 bg-blue-600' 
+                                    : isDisabled
+                                        ? 'border-gray-300 bg-gray-100'
+                                        : 'border-gray-300'
+                            }">
+                                ${isSelected ? '<svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>' : ''}
+                                ${isDisabled && !isSelected ? '<svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>' : ''}
+                            </div>
+                        </div>
+                        <div class="text-2xl font-bold ${isDisabled ? 'text-gray-400' : 'text-blue-600'} mb-1">
+                            ${level.amount.toLocaleString()}
+                        </div>
+                        <div class="text-xs ${isDisabled ? 'text-gray-400' : 'text-gray-500'}">USDT-TON</div>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function updateTotal() {
+            const total = selectedLevels.reduce((sum, id) => {
+                const level = LEVELS.find(l => l.id === id);
+                return sum + (level?.amount || 0);
+            }, 0);
+            document.getElementById('total-amount').textContent = total.toLocaleString();
+            document.getElementById('selected-count').textContent = selectedLevels.length;
+        }
+
+        // Initialize
+        renderLevels();
+        updateTotal();
+    </script>
+</body>
+</html>
