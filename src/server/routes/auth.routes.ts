@@ -137,8 +137,10 @@ authRoutes.get('/me', authMiddleware, async (c) => {
 
 /**
  * POST /api/auth/verify-session
- * Verify auth provider session and return/create user
+ * DEPRECATED: Privy-based session verification removed
+ * Use wallet-based auth with TON Connect instead
  */
+/* REMOVED - Privy integration deprecated
 const verifySessionSchema = z.object({
   authToken: z.string(),
   telegramData: z.object({
@@ -152,7 +154,7 @@ const verifySessionSchema = z.object({
   }).optional()
 })
 
-authRoutes.post('/verify-session', zValidator('json', verifySessionSchema), async (c) => {
+authRoutes.post('/verify-session-DEPRECATED', zValidator('json', verifySessionSchema), async (c) => {
   try {
     const { authToken, telegramData } = c.req.valid('json')
     
@@ -209,6 +211,7 @@ authRoutes.post('/verify-session', zValidator('json', verifySessionSchema), asyn
     }, 401)
   }
 })
+*/
 
 /**
  * POST /api/auth/telegram-init
@@ -246,29 +249,8 @@ authRoutes.post('/telegram-init', zValidator('json', telegramInitSchema), async 
     
     if (user) {
       // User exists with this Telegram ID
-      // If authToken is provided, merge provider ID if missing
-      if (authToken && !user.privyUserId) {
-        try {
-          const { createAuthProviderService } = await import('../services/auth-provider.service')
-          const authProviderService = createAuthProviderService(c.env)
-          const verifiedUser = await authProviderService.verifyAccessToken(authToken)
-          
-          // Merge provider ID into existing Telegram account
-          await db.update(users)
-            .set({ privyUserId: verifiedUser.userId })
-            .where(eq(users.id, user.id))
-          
-          // Refresh user data
-          const updatedProfile = await authService.getUserProfile(user.id)
-          if (updatedProfile) {
-            user = updatedProfile
-          }
-          
-          console.log(`[Auth] Merged provider ID into Telegram user ${user.id}`)
-        } catch (error) {
-          console.error('Provider ID merge failed (non-critical):', error)
-        }
-      }
+      // Privy integration removed - wallet-first architecture
+      // TODO: Implement TON Connect signature verification in Cursor phase
     } else if (authToken) {
       // Step 2: No Telegram user found, but authToken provided
       // Try to link to existing provider account

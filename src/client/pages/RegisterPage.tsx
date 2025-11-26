@@ -38,7 +38,7 @@ export default function RegisterPage() {
   const [authLoading, setAuthLoading] = useState(false)
   const [activateLoading, setActivateLoading] = useState(false)
   
-  const { register, authenticateUser, isAuthenticated } = useAuth()
+  const { isAuthenticated, walletAddress } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -54,53 +54,13 @@ export default function RegisterPage() {
     })
   }
 
-  // Modern auth flow (generic button)
-  const handleJoinCommunity = async () => {
+  // Wallet connection placeholder
+  // TODO: In Cursor phase, this will trigger TON Connect
+  const handleConnectWallet = async () => {
     setError('')
-    setAuthLoading(true)
-
-    try {
-      await authenticateUser()
-      navigate('/dashboard')
-    } catch (err: any) {
-      setError(err.message || t.register.authenticationFailed)
-    } finally {
-      setAuthLoading(false)
-    }
-  }
-
-  // Legacy registration
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-
-    if (formData.password !== formData.confirmPassword) {
-      setError(t.register.passwordMismatch)
-      return
-    }
-
-    if (formData.password.length < 8) {
-      setError(t.register.passwordTooShort)
-      return
-    }
-
-    setLoading(true)
-
-    try {
-      await register({
-        fullName: formData.fullName,
-        email: formData.email,
-        password: formData.password,
-        country: formData.country || undefined,
-        referralCode: formData.referralCode || undefined,
-        selectedLevels: formData.selectedLevels
-      })
-      navigate('/dashboard')
-    } catch (err: any) {
-      setError(err.message || t.register.registrationFailed)
-    } finally {
-      setLoading(false)
-    }
+    setError('Wallet connection will be implemented in Telegram mini-app')
+    // For now, this is a placeholder
+    // In Cursor, this will use TON Connect SDK
   }
 
   // Check if a level can be selected (sequential rule)
@@ -164,22 +124,14 @@ export default function RegisterPage() {
       return
     }
     
-    // If not authenticated, trigger auth flow first
-    if (!isAuthenticated) {
-      setAuthLoading(true)
-      try {
-        await authenticateUser()
-        // After successful auth, proceed with activation
-        await activateLevelsDirectly()
-      } catch (err: any) {
-        setError(err.message || t.register.authenticationFailed)
-      } finally {
-        setAuthLoading(false)
-      }
-    } else {
-      // Already authenticated, activate directly
-      await activateLevelsDirectly()
+    // Check wallet connection
+    if (!walletAddress && !isAuthenticated) {
+      setError('Please connect your TON wallet in the Telegram mini-app to activate levels')
+      return
     }
+    
+    // Activate levels directly
+    await activateLevelsDirectly()
   }
 
   const activateLevelsDirectly = async () => {

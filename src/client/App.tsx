@@ -1,6 +1,5 @@
 import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { PrivyProvider } from '@privy-io/react-auth'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { LanguageProvider } from './contexts/LanguageContext'
 import Layout from './components/Layout'
@@ -11,22 +10,6 @@ import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/DashboardPage'
 import MatrixPage from './pages/MatrixPage'
 import AdminPage from './pages/AdminPage'
-
-// Auth provider configuration (invisible to UI)
-const AUTH_CONFIG = {
-  appId: import.meta.env.VITE_PRIVY_APP_ID || import.meta.env.VITE_AUTH_PROVIDER_APP_ID || '',
-  config: {
-    appearance: {
-      // Minimal branding - provider modal will show but we don't add extra text
-      theme: 'light',
-      accentColor: '#0098EA', // TON blue
-    },
-    // Embedded wallets for seamless UX
-    embeddedWallets: {
-      createOnLogin: 'users-without-wallets',
-    }
-  }
-}
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, loading } = useAuth()
@@ -85,15 +68,10 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <PrivyProvider
-      appId={AUTH_CONFIG.appId}
-      config={AUTH_CONFIG.config}
-    >
-      <LanguageProvider>
-        <AuthProvider>
-          <AppRoutes />
-        </AuthProvider>
-      </LanguageProvider>
-    </PrivyProvider>
+    <LanguageProvider>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </LanguageProvider>
   )
 }
