@@ -58,3 +58,4 @@ pids/
 *.pid
 *.seed
 *.pid.lock
+core
