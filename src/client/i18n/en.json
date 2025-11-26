@@ -100,7 +100,58 @@
     "readySubtitle": "Start your journey in the HelpingHandsRewards community today. Choose your platform:",
     "webPlatform": "Web Platform",
     "telegramMiniApp": "Telegram Mini-App",
-    "contributionIntro": "You may start with a Contribution of 5 USDT-TON, or activate multiple Contribution Levels from the beginning. The long-term goal is to be active across all 10 Contribution Levels."
+    "contributionIntro": "You may start with a Contribution of 5 USDT-TON, or activate multiple Contribution Levels from the beginning. The long-term goal is to be active across all 10 Contribution Levels.",
+    "fullPotentialTitle": "Full Potential When All Contribution Levels Are Active",
+    "fullPotentialSubtitle": "Understanding the Complete 2×2 Community Matrix Rewards",
+    "fullPotentialIntro": "When all 10 Contribution Levels are active, every completed cycle across the 2×2 Community Matrices produces a combined total of 15,420 USDT-TON in Recurring Rewards.",
+    "rewardsPerCycleTitle": "Recurring Rewards per Contribution Level",
+    "rewardsPerCycleSubtitle": "Each level operates independently with its own 2×2 Community Matrix",
+    "fullPotentialTotal": "TOTAL (all levels active)",
+    "fullPotentialTotalAmount": "15,420 USDT-TON per completed cycle",
+    "motivationalTitle": "The Power of Duplication",
+    "motivationalText": "This potential is unlocked through duplication. When you invite 2 or MORE, and they each invite 2 or MORE, this creates continuous activity across all levels. Combined with the auto-upgrade system, committed members can work towards activating all 10 Contribution Levels over time. Remember: No guarantees, no promises. Your Recurring Rewards depend entirely on your participation and the activity of the wider community.",
+    "rewardsBreakdown": [
+      {
+        "level": "5 USDT-TON",
+        "reward": "15 USDT-TON"
+      },
+      {
+        "level": "10 USDT-TON",
+        "reward": "30 USDT-TON"
+      },
+      {
+        "level": "20 USDT-TON",
+        "reward": "60 USDT-TON"
+      },
+      {
+        "level": "40 USDT-TON",
+        "reward": "120 USDT-TON"
+      },
+      {
+        "level": "80 USDT-TON",
+        "reward": "240 USDT-TON"
+      },
+      {
+        "level": "160 USDT-TON",
+        "reward": "480 USDT-TON"
+      },
+      {
+        "level": "320 USDT-TON",
+        "reward": "960 USDT-TON"
+      },
+      {
+        "level": "640 USDT-TON",
+        "reward": "1,920 USDT-TON"
+      },
+      {
+        "level": "1,280 USDT-TON",
+        "reward": "3,840 USDT-TON"
+      },
+      {
+        "level": "2,560 USDT-TON",
+        "reward": "7,680 USDT-TON"
+      }
+    ]
   },
   "register": {
     "title": "Join the Community",
@@ -136,7 +187,10 @@
     "selectAllLevels": "Select All 10 Levels",
     "deselectAll": "Deselect All",
     "totalContribution": "Total Contribution",
-    "selectedLevels": "Selected Levels"
+    "selectedLevels": "Selected Levels",
+    "fullPotentialTitle": "Full Potential: 15,420 USDT-TON",
+    "fullPotentialDescription": "When all 10 Contribution Levels are active, each completed cycle across all 2×2 Community Matrices generates 15,420 USDT-TON in Recurring Rewards. This is achieved through duplication, where inviting 2 or MORE people who each invite 2 or MORE creates continuous matrix activity and unlocks the auto-upgrade system.",
+    "fullPotentialDisclaimer": "No guarantees, no promises. Your Recurring Rewards depend entirely on your participation and the activity of the wider community."
   },
   "login": {
     "title": "Welcome Back",

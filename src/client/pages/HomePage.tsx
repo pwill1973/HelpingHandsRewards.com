@@ -209,6 +209,80 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Full Potential Rewards Section */}
+      <section className="py-20 bg-gradient-to-br from-blue-50 to-white dark:from-gray-800 dark:to-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+              {t.home.fullPotentialTitle}
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+              {t.home.fullPotentialSubtitle}
+            </p>
+          </div>
+
+          <div className="max-w-5xl mx-auto mb-12">
+            <div className="bg-gradient-to-br from-ton-blue to-blue-600 text-white rounded-2xl p-8 shadow-2xl text-center mb-8">
+              <p className="text-xl md:text-2xl leading-relaxed">
+                {t.home.fullPotentialIntro}
+              </p>
+            </div>
+
+            <h3 className="text-2xl font-bold text-center mb-8 text-gray-900 dark:text-white">
+              {t.home.rewardsPerCycleTitle}
+            </h3>
+            <p className="text-center text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
+              {t.home.rewardsPerCycleSubtitle}
+            </p>
+
+            <div className="overflow-x-auto">
+              <table className="w-full bg-white dark:bg-gray-800 shadow-xl rounded-lg overflow-hidden">
+                <thead className="bg-gradient-to-r from-ton-blue to-blue-600 text-white">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-lg">{t.common.contribution}</th>
+                    <th className="px-6 py-4 text-right text-lg">{t.common.rewards} per Cycle</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {t.home.rewardsBreakdown.map((item: any, index: number) => (
+                    <tr key={index} className="hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors">
+                      <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">
+                        {item.level}
+                      </td>
+                      <td className="px-6 py-4 text-right font-bold text-ton-blue dark:text-blue-400 text-lg">
+                        {item.reward}
+                      </td>
+                    </tr>
+                  ))}
+                  <tr className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-gray-700 dark:to-gray-700 border-t-4 border-ton-blue">
+                    <td className="px-6 py-5 font-bold text-gray-900 dark:text-white text-lg">
+                      {t.home.fullPotentialTotal}
+                    </td>
+                    <td className="px-6 py-5 text-right font-bold text-green-600 dark:text-green-400 text-xl">
+                      {t.home.fullPotentialTotalAmount}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg border-l-4 border-ton-blue">
+              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white flex items-center">
+                <svg className="w-8 h-8 text-ton-blue mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                {t.home.motivationalTitle}
+              </h3>
+              <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                {t.home.motivationalText}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Why TON & Telegram */}
       <section className="py-20 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

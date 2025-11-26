@@ -100,7 +100,58 @@
     "readySubtitle": "Commencez votre parcours dans la communauté HelpingHandsRewards aujourd'hui. Choisissez votre plateforme :",
     "webPlatform": "Plateforme Web",
     "telegramMiniApp": "Mini-App Telegram",
-    "contributionIntro": "Vous pouvez commencer avec une Contribution de 5 USDT-TON, ou activer plusieurs Niveaux de Contribution dès le début. L'objectif à long terme est d'être actif sur les 10 Niveaux de Contribution."
+    "contributionIntro": "Vous pouvez commencer avec une Contribution de 5 USDT-TON, ou activer plusieurs Niveaux de Contribution dès le début. L'objectif à long terme est d'être actif sur les 10 Niveaux de Contribution.",
+    "fullPotentialTitle": "Plein Potentiel Lorsque Tous les Niveaux de Contribution Sont Actifs",
+    "fullPotentialSubtitle": "Comprendre les Récompenses Complètes de la Matrice Communautaire 2×2",
+    "fullPotentialIntro": "Lorsque les 10 Niveaux de Contribution sont actifs, chaque cycle complété à travers les Matrices Communautaires 2×2 produit un total combiné de 15 420 USDT-TON en Récompenses Récurrentes.",
+    "rewardsPerCycleTitle": "Récompenses Récurrentes par Niveau de Contribution",
+    "rewardsPerCycleSubtitle": "Chaque niveau fonctionne indépendamment avec sa propre Matrice Communautaire 2×2",
+    "fullPotentialTotal": "TOTAL (tous les niveaux actifs)",
+    "fullPotentialTotalAmount": "15 420 USDT-TON par cycle complété",
+    "motivationalTitle": "La Puissance de la Duplication",
+    "motivationalText": "Ce potentiel est débloqué grâce à la duplication. Lorsque vous invitez 2 personnes ou PLUS, et qu'elles invitent chacune 2 personnes ou PLUS, cela crée une activité continue sur tous les niveaux. Combiné avec le système d'évolution automatique, les membres engagés peuvent travailler à activer les 10 Niveaux de Contribution au fil du temps. N'oubliez pas : Aucune garantie, aucune promesse. Vos Récompenses Récurrentes dépendent entièrement de votre participation et de l'activité de la communauté.",
+    "rewardsBreakdown": [
+      {
+        "level": "5 USDT-TON",
+        "reward": "15 USDT-TON"
+      },
+      {
+        "level": "10 USDT-TON",
+        "reward": "30 USDT-TON"
+      },
+      {
+        "level": "20 USDT-TON",
+        "reward": "60 USDT-TON"
+      },
+      {
+        "level": "40 USDT-TON",
+        "reward": "120 USDT-TON"
+      },
+      {
+        "level": "80 USDT-TON",
+        "reward": "240 USDT-TON"
+      },
+      {
+        "level": "160 USDT-TON",
+        "reward": "480 USDT-TON"
+      },
+      {
+        "level": "320 USDT-TON",
+        "reward": "960 USDT-TON"
+      },
+      {
+        "level": "640 USDT-TON",
+        "reward": "1 920 USDT-TON"
+      },
+      {
+        "level": "1 280 USDT-TON",
+        "reward": "3 840 USDT-TON"
+      },
+      {
+        "level": "2 560 USDT-TON",
+        "reward": "7 680 USDT-TON"
+      }
+    ]
   },
   "register": {
     "title": "Rejoindre la Communauté",
@@ -136,7 +187,10 @@
     "selectAllLevels": "Sélectionner les 10 Niveaux",
     "deselectAll": "Tout désélectionner",
     "totalContribution": "Contribution Totale",
-    "selectedLevels": "Niveaux Sélectionnés"
+    "selectedLevels": "Niveaux Sélectionnés",
+    "fullPotentialTitle": "Plein Potentiel : 15 420 USDT-TON",
+    "fullPotentialDescription": "Lorsque les 10 Niveaux de Contribution sont actifs, chaque cycle complété à travers toutes les Matrices Communautaires 2×2 génère 15 420 USDT-TON en Récompenses Récurrentes. Ceci est réalisé grâce à la duplication, où inviter 2 personnes ou PLUS qui invitent chacune 2 personnes ou PLUS crée une activité matricielle continue et débloque le système d'évolution automatique.",
+    "fullPotentialDisclaimer": "Aucune garantie, aucune promesse. Vos Récompenses Récurrentes dépendent entièrement de votre participation et de l'activité de la communauté."
   },
   "login": {
     "title": "Bienvenue",
