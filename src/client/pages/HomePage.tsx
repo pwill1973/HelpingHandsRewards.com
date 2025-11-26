@@ -37,6 +37,10 @@ export default function HomePage() {
             </a>
           </div>
           
+          <p className="text-base md:text-lg text-white/95 max-w-4xl mx-auto mb-6 leading-relaxed font-medium">
+            {t.home.heroAccessibilitySummary}
+          </p>
+          
           <p className="text-sm text-blue-100 max-w-2xl mx-auto">
             <strong>{t.compliance.disclaimer.split(':')[0]}:</strong> {t.compliance.disclaimer.split(':')[1]}
           </p>
