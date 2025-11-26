@@ -51,10 +51,17 @@ export class TonService {
   ) {}
 
   /**
-   * Link TON wallet to user account
+   * Link TON wallet to user account (WALLET AS PRIMARY IDENTITY)
    * 
-   * CRITICAL: Supports identity merging when same wallet connects from different entry points
+   * CRITICAL BUSINESS RULE: ONE WALLET = ONE MEMBER
+   * - ton_wallet_address is the PRIMARY membership identifier
+   * - All matrices, rewards, and cycles are tied to the wallet
+   * - If wallet already exists, accounts are merged (wallet-anchored account wins)
+   * 
+   * Supports identity merging when same wallet connects from different entry points
    * (e.g., user starts on Telegram, later connects same wallet on web)
+   * 
+   * Returns merge status so caller can handle merged user session
    */
   async linkWallet(userId: number, walletAddress: string, network: 'testnet' | 'mainnet'): Promise<{ merged: boolean; mergedUserId?: number }> {
     // Validate address format
@@ -82,8 +89,14 @@ export class TonService {
         throw new Error('Current user not found')
       }
 
-      // Merge strategy: Prefer the account with more identity anchors
-      // If they're equal, prefer the older account (lower ID)
+      // WALLET-FIRST MERGE STRATEGY:
+      // The wallet-anchored account ALWAYS wins
+      // Since existingUser already has the wallet, it is the primary account
+      // 
+      // Secondary merge strategy (if both somehow have wallets):
+      // 1. Prefer account with more identity anchors
+      // 2. If equal, prefer older account (lower ID)
+      
       const currentAnchors = [
         currentUser.privyUserId,
         currentUser.telegramUserId,
@@ -98,7 +111,12 @@ export class TonService {
 
       // Determine which account to merge INTO
       let primaryUser, secondaryUser
-      if (currentAnchors > existingAnchors) {
+      
+      // WALLET WINS: Existing user already has wallet, so it's primary
+      if (existingUser.tonWalletAddress) {
+        primaryUser = existingUser
+        secondaryUser = currentUser
+      } else if (currentAnchors > existingAnchors) {
         primaryUser = currentUser
         secondaryUser = existingUser
       } else if (existingAnchors > currentAnchors) {

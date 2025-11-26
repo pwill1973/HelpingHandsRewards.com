@@ -11,10 +11,13 @@ import { authMiddleware } from '../middleware/auth'
 const authRoutes = new Hono<AuthEnv>()
 
 // Validation schemas
+// LEGACY registration schema (email/password flow)
+// NOTE: Modern wallet-first flow uses /verify-session instead
+// Email and fullName are now OPTIONAL (wallet is the only required membership ID)
 const registerSchema = z.object({
-  email: z.string().email(),
+  email: z.string().email().optional(), // Optional: not needed if user only has wallet
   password: z.string().min(8),
-  fullName: z.string().min(2),
+  fullName: z.string().min(2).optional(), // Optional: wallet is the real identity
   country: z.string().optional(),
   referralCode: z.string().optional(),
   selectedLevels: z.array(z.number()).min(1).max(10) // Must select at least 1 level, max 10

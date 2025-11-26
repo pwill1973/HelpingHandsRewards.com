@@ -19,23 +19,31 @@ export class AuthService {
   ) {}
 
   /**
-   * Register a new user
+   * Register a new user (LEGACY EMAIL/PASSWORD FLOW)
+   * 
+   * NOTE: This is the legacy registration method for email/password users.
+   * Modern wallet-first flow uses findOrCreateUserByProviderId() instead.
+   * 
+   * IMPORTANT: Email and fullName are optional metadata.
+   * Real membership requires ton_wallet_address to be linked later.
    */
   async register(data: RegisterRequest): Promise<UserProfile> {
-    // Check if email already exists
-    const existingUser = await this.db.query.users.findFirst({
-      where: eq(users.email, data.email.toLowerCase())
-    })
+    // Check if email already exists (if provided)
+    if (data.email) {
+      const existingUser = await this.db.query.users.findFirst({
+        where: eq(users.email, data.email.toLowerCase())
+      })
 
-    if (existingUser) {
-      throw new Error('Email already registered')
+      if (existingUser) {
+        throw new Error('Email already registered')
+      }
     }
 
     // Hash password
     const passwordHash = await bcrypt.hash(data.password, SALT_ROUNDS)
 
     // Generate unique codes
-    const username = generateUsername(data.email)
+    const username = generateUsername(data.email || `user_${Date.now()}`)
     const memberCode = await this.generateUniqueMemberCode()
     const referralCode = await this.generateUniqueReferralCode()
 
@@ -54,10 +62,11 @@ export class AuthService {
     }
 
     // Create user
+    // NOTE: fullName is now optional - defaults to username if not provided
     const result: any = await this.db.insert(users).values({
-      email: data.email.toLowerCase(),
+      email: data.email?.toLowerCase() || null,
       passwordHash,
-      fullName: data.fullName,
+      fullName: data.fullName || username, // Fallback to username
       username,
       memberCode,
       referralCode,
@@ -137,8 +146,20 @@ export class AuthService {
   }
 
   /**
-   * Find or create user by auth provider ID
+   * Find or create user by auth provider ID (WALLET-FIRST)
    * Used for seamless auth provider integration
+   * 
+   * CRITICAL WALLET-FIRST LOGIC:
+   * - ton_wallet_address is the PRIMARY membership identity
+   * - If wallet exists, we MERGE into that account (wallet wins)
+   * - providerId and telegramUserId are login identities only
+   * - Email and personal data are optional metadata
+   * 
+   * Identity resolution priority:
+   * 1. Check by providerId (Privy)
+   * 2. Check by walletAddress (PRIMARY - if exists, merge)
+   * 3. Check by telegramUserId (Telegram)
+   * 4. Create new account only if NO matches
    * 
    * Enhanced to support identity merging when same person has multiple entry points
    */
@@ -171,14 +192,18 @@ export class AuthService {
       return this.toUserProfile(user!)
     }
 
-    // Step 2: Check if user exists with same wallet address (merge scenario)
+    // Step 2: Check if user exists with same wallet address (WALLET WINS)
+    // CRITICAL: Wallet is the primary membership identity
+    // If wallet exists, we merge login identities into that wallet-anchored account
     if (metadata?.walletAddress) {
       const userByWallet = await this.db.query.users.findFirst({
         where: eq(users.tonWalletAddress, metadata.walletAddress)
       })
       
       if (userByWallet) {
-        // Found user with same wallet - merge provider ID into existing account
+        // WALLET WINS: Merge provider ID and Telegram ID into existing wallet account
+        console.log(`[Auth] Wallet-based merge: Merging providerId into wallet owner ${userByWallet.id}`)
+        
         await this.db.update(users)
           .set({ 
             privyUserId: providerId,

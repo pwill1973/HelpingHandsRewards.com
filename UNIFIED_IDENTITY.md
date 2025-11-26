@@ -14,19 +14,89 @@ Both entry points connect to **the same user account**, with the same:
 
 ---
 
+## CRITICAL: Wallet as Primary Identity
+
+**HelpingHandsRewards.com is a blockchain-first, peer-to-peer system.**
+
+### The Wallet Is The Only Real Membership Identity
+
+**Core Principle**: Only `ton_wallet_address` is used to identify members for participation and Rewards.
+
+- ✅ **Wallet address** = Membership identity (who you are on-chain)
+- ✅ **Auth provider ID** (Privy) = Login identity (how you access from web)
+- ✅ **Telegram user ID** = Login identity (how you access from Telegram)
+
+### What This Means
+
+1. **All matrices, cycles, and Recurring Rewards are keyed by `ton_wallet_address`**
+   - Not by email
+   - Not by full name
+   - Not by street address
+   - **Only by wallet**
+
+2. **Email, name, and personal data are optional metadata**
+   - They are **never** used as the primary key for:
+     - Matrices
+     - Rewards
+     - Cycles
+     - Contribution tracking
+   - They exist only for display purposes (if provided at all)
+
+3. **If a user has no wallet linked, they are not considered an "active member"**
+   - They cannot participate in matrices
+   - They cannot receive Rewards
+   - They must connect a wallet to become a full member
+
+### Identity Hierarchy
+
+```
+PRIMARY IDENTITY (Membership):
+  ↓
+ton_wallet_address ← All matrices, rewards, cycles tied to this
+  ↓
+SECONDARY IDENTITIES (Login methods):
+  ├─ privy_user_id    (How wallet owner logs in from web)
+  └─ telegram_user_id (How wallet owner logs in from Telegram)
+  ↓
+OPTIONAL METADATA (Display only):
+  ├─ email
+  ├─ fullName
+  └─ country
+```
+
+### Conflict Resolution: Wallet Always Wins
+
+When merging accounts, **the wallet-anchored account is always primary**:
+
+```typescript
+// Example: Two separate accounts try to link same wallet
+Account A: privy_user_id + telegram_user_id (no wallet yet)
+Account B: ton_wallet_address only
+
+// Account B WINS because it has the wallet
+// Result: privy_user_id and telegram_user_id copied to Account B
+```
+
+---
+
 ## Identity Anchors
 
 Each user account can have **three identity anchors**:
 
 ```typescript
 {
-  privy_user_id: string      // Auth provider identity (Privy)
-  telegram_user_id: string   // Telegram user ID from WebApp
-  ton_wallet_address: string // TON blockchain wallet
+  // PRIMARY MEMBERSHIP IDENTITY
+  ton_wallet_address: string // Blockchain membership (who you are)
+  
+  // LOGIN IDENTITIES (how you access your account)
+  privy_user_id: string      // Auth provider (web login)
+  telegram_user_id: string   // Telegram WebApp (Telegram login)
 }
 ```
 
 **All three can coexist in the same user row.**
+
+**But only `ton_wallet_address` determines matrix participation and Rewards.**
 
 ---
 
@@ -236,6 +306,41 @@ if (telegramData && !user.telegramUserId) {
 
 ---
 
+## Personal Data: Optional and Never Used for Rewards
+
+### Email, Name, and Profile Fields
+
+**IMPORTANT**: Email, full name, and any personal profile fields:
+
+1. ✅ **Are NOT required to register or participate**
+   - A user can create an account with just a wallet
+   - No email needed
+   - No full name needed
+   - No KYC data (address, DOB, etc.)
+
+2. ✅ **Are NEVER used as the primary key for**:
+   - Matrix positioning
+   - Reward distribution
+   - Cycle completion
+   - Contribution tracking
+   - Any blockchain-related logic
+
+3. ✅ **Are treated as optional profile fields only**:
+   - For display purposes (if provided)
+   - For user preference (optional)
+   - For internal reference (optional)
+
+### Peer-to-Peer, Wallet-Based System
+
+This is a **peer-to-peer, wallet-based system**, not an email-based Web2 SaaS:
+
+- ❌ **Not like**: Traditional web apps that require email/password
+- ✅ **More like**: Uniswap, Aave, DeFi protocols (wallet-first)
+
+**The wallet is the only identity that matters for participation.**
+
+---
+
 ## Source of Truth
 
 ### Blockchain (TON Smart Contract)
@@ -259,17 +364,24 @@ if (telegramData && !user.telegramUserId) {
 User Action (Website or Telegram)
          ↓
   Authentication Layer
-  (privy_user_id + telegram_user_id + ton_wallet_address)
+  (Login via privy_user_id OR telegram_user_id)
          ↓
     D1 Database
-    (Resolves to user.id)
+    (Resolves to user.id → ton_wallet_address)
+         ↓
+  WALLET IS THE KEY ← CRITICAL DECISION POINT
          ↓
   Blockchain Queries
   (Uses ton_wallet_address to read on-chain state)
          ↓
+  Matrix Service
+  (Uses userId, which represents the wallet owner)
+         ↓
     Frontend Display
-    (Shows unified data from both sources)
+    (Shows unified data: wallet-based matrices + on-chain state)
 ```
+
+**Key Point**: Even though the backend uses `userId` internally, that `userId` always represents **the owner of a specific wallet**. All matrix and reward logic is fundamentally wallet-based.
 
 ---
 

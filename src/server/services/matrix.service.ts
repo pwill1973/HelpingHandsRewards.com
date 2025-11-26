@@ -13,12 +13,22 @@ import {
 /**
  * Matrix Service - Complete 2×2 Community Matrix Implementation
  * 
+ * CRITICAL: WALLET-BASED MEMBERSHIP
+ * - All matrix operations are tied to ton_wallet_address (via user.id)
+ * - Email, name, and personal data are NEVER used for matrix logic
+ * - The wallet is the only real membership identifier
+ * - userId represents the user who owns a specific wallet
+ * 
  * Features:
  * - 10 Contribution Levels (5, 10, 20, 40, 80, 160, 320, 640, 1280, 2560)
  * - Equal Distribution Placement (1→2→3→4→5→6)
  * - Position 3 & 4: Direct Recurring Rewards
  * - Position 5: Auto-Upgrade
  * - Position 6: Re-entry
+ * 
+ * IMPORTANT: All methods receive userId, which is the internal ID of the user
+ * that owns a specific ton_wallet_address. The userId is merely a foreign key
+ * to the wallet-anchored user record.
  */
 export class MatrixService {
   constructor(private db: DbClient) {}

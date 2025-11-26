@@ -8,23 +8,26 @@ export const users = sqliteTable('users', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   
   // Identity anchors (multiple ways to identify the same user)
-  privyUserId: text('privy_user_id').unique(), // Primary identity from auth provider
-  telegramUserId: text('telegram_user_id'), // Telegram user ID for mini-app
+  // CRITICAL: ton_wallet_address is the PRIMARY MEMBERSHIP IDENTITY
+  // All matrices, rewards, and cycles are keyed by wallet address
+  tonWalletAddress: text('ton_wallet_address').unique(), // PRIMARY: Blockchain membership identity
+  tonNetwork: text('ton_network', { enum: ['testnet', 'mainnet'] }).default('testnet'),
   
-  // Legacy auth fields (kept for backward compatibility)
+  // Login identities (HOW the wallet owner accesses their account)
+  privyUserId: text('privy_user_id').unique(), // Auth provider login (web)
+  telegramUserId: text('telegram_user_id').unique(), // Telegram mini-app login
+  
+  // Legacy auth fields (DEPRECATED - for email/password flow only)
+  // DO NOT use email as membership identifier - wallet is the only real identity
   email: text('email').unique(),
   passwordHash: text('password_hash'),
   
-  // Profile
-  fullName: text('full_name').notNull(),
-  username: text('username').notNull().unique(),
-  memberCode: text('member_code').notNull().unique(),
-  referralCode: text('referral_code').notNull().unique(),
-  country: text('country'),
-  
-  // TON Integration
-  tonWalletAddress: text('ton_wallet_address'),
-  tonNetwork: text('ton_network', { enum: ['testnet', 'mainnet'] }).default('testnet'),
+  // Profile metadata (OPTIONAL - never used for matrix/reward logic)
+  fullName: text('full_name'), // Optional display name
+  username: text('username').notNull().unique(), // Generated handle
+  memberCode: text('member_code').notNull().unique(), // System-generated code
+  referralCode: text('referral_code').notNull().unique(), // System-generated code
+  country: text('country'), // Optional
   
   // Referral relationship
   referredById: integer('referred_by_id'),
