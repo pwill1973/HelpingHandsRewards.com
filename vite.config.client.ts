@@ -21,6 +21,12 @@ export default defineConfig({
         chunkFileNames: 'assets/[name]-[hash].js',
         assetFileNames: 'assets/[name]-[hash].[ext]'
       }
+    },
+    commonjsOptions: {
+      transformMixedEsModules: true
     }
+  },
+  optimizeDeps: {
+    include: ['@heroicons/react']
   }
 })
