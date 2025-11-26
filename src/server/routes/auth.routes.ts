@@ -163,16 +163,19 @@ authRoutes.post('/verify-session', zValidator('json', verifySessionSchema), asyn
     // Verify the auth provider token
     const verifiedUser = await authProviderService.verifyAccessToken(authToken)
     
-    // Find or create user by provider ID
+    // Find or create user by provider ID (supports automatic merging)
     let user = await authService.findOrCreateUserByProviderId(verifiedUser.userId, {
       email: verifiedUser.email,
-      walletAddress: verifiedUser.walletAddress
+      walletAddress: verifiedUser.walletAddress,
+      telegramUserId: telegramData?.userId
     })
     
-    // If Telegram data is provided, link it
-    if (telegramData) {
+    // If Telegram data is provided and not already linked, link it
+    if (telegramData && !user.telegramUserId) {
       // Verify Telegram data signature (basic check)
-      // In production, implement full Telegram signature verification
+      // TODO: In production, implement full Telegram signature verification
+      // using HMAC-SHA256 with bot token
+      
       await authService.linkTelegramUser(user.id, telegramData.userId)
       
       // Refresh user data
@@ -180,6 +183,8 @@ authRoutes.post('/verify-session', zValidator('json', verifySessionSchema), asyn
       if (updatedProfile) {
         user = updatedProfile
       }
+      
+      console.log(`[Auth] Linked Telegram ID to user ${user.id}`)
     }
     
     // Generate our own JWT for subsequent requests
@@ -228,31 +233,62 @@ authRoutes.post('/telegram-init', zValidator('json', telegramInitSchema), async 
     
     let user: any = null
     
-    // Check if user already exists with this Telegram ID
+    // IDENTITY RESOLUTION PRIORITY:
+    // 1. Check if Telegram ID already exists
+    // 2. If authToken provided, try to merge with provider account
+    // 3. Otherwise, create new Telegram-only account
+    
+    // Step 1: Check if user already exists with this Telegram ID
     user = await authService.findUserByTelegramId(telegramData.userId)
     
-    if (!user && authToken) {
-      // Try to link to existing auth provider account
+    if (user) {
+      // User exists with this Telegram ID
+      // If authToken is provided, merge provider ID if missing
+      if (authToken && !user.privyUserId) {
+        try {
+          const { createAuthProviderService } = await import('../services/auth-provider.service')
+          const authProviderService = createAuthProviderService(c.env)
+          const verifiedUser = await authProviderService.verifyAccessToken(authToken)
+          
+          // Merge provider ID into existing Telegram account
+          await db.update(users)
+            .set({ privyUserId: verifiedUser.userId })
+            .where(eq(users.id, user.id))
+          
+          // Refresh user data
+          const updatedProfile = await authService.getUserProfile(user.id)
+          if (updatedProfile) {
+            user = updatedProfile
+          }
+          
+          console.log(`[Auth] Merged provider ID into Telegram user ${user.id}`)
+        } catch (error) {
+          console.error('Provider ID merge failed (non-critical):', error)
+        }
+      }
+    } else if (authToken) {
+      // Step 2: No Telegram user found, but authToken provided
+      // Try to link to existing provider account
       try {
         const { createAuthProviderService } = await import('../services/auth-provider.service')
         const authProviderService = createAuthProviderService(c.env)
         const verifiedUser = await authProviderService.verifyAccessToken(authToken)
         
-        // Find or create by provider ID
+        // Find or create by provider ID (this will merge if wallet/telegram matches)
         user = await authService.findOrCreateUserByProviderId(verifiedUser.userId, {
           email: verifiedUser.email,
-          walletAddress: verifiedUser.walletAddress
+          walletAddress: verifiedUser.walletAddress,
+          telegramUserId: telegramData.userId
         })
         
-        // Link Telegram ID
-        await authService.linkTelegramUser(user.id, telegramData.userId)
+        console.log(`[Auth] Linked Telegram to provider account ${user.id}`)
       } catch (error) {
         console.error('Auth provider linking failed:', error)
       }
     }
     
     if (!user) {
-      // Create new user for Telegram-only flow
+      // Step 3: Create new user for pure Telegram-only flow
       const username = telegramData.username || `tg_${telegramData.userId}`
       const memberCode = await authService['generateUniqueMemberCode']()
       const referralCode = await authService['generateUniqueReferralCode']()
@@ -267,6 +303,8 @@ authRoutes.post('/telegram-init', zValidator('json', telegramInitSchema), async 
       }).returning()
       
       user = authService['toUserProfile'](result[0])
+      
+      console.log(`[Auth] Created new Telegram-only user ${user.id}`)
     }
     
     // Generate JWT

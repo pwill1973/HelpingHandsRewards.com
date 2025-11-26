@@ -139,21 +139,85 @@ export class AuthService {
   /**
    * Find or create user by auth provider ID
    * Used for seamless auth provider integration
+   * 
+   * Enhanced to support identity merging when same person has multiple entry points
    */
   async findOrCreateUserByProviderId(
     providerId: string,
-    metadata?: { email?: string; walletAddress?: string }
+    metadata?: { email?: string; walletAddress?: string; telegramUserId?: string }
   ): Promise<UserProfile> {
-    // Try to find existing user by provider ID
+    // Step 1: Try to find existing user by provider ID (primary identity)
     let user = await this.db.query.users.findFirst({
       where: eq(users.privyUserId, providerId)
     })
 
     if (user) {
-      return this.toUserProfile(user)
+      // User exists with this provider ID
+      // If metadata has new wallet or telegram, merge them
+      const updates: any = {}
+      if (metadata?.walletAddress && !user.tonWalletAddress) {
+        updates.tonWalletAddress = metadata.walletAddress
+      }
+      if (metadata?.telegramUserId && !user.telegramUserId) {
+        updates.telegramUserId = metadata.telegramUserId
+      }
+      
+      if (Object.keys(updates).length > 0) {
+        await this.db.update(users).set(updates).where(eq(users.id, user.id))
+        // Refresh user data
+        user = await this.db.query.users.findFirst({ where: eq(users.id, user.id) })
+      }
+      
+      return this.toUserProfile(user!)
     }
 
-    // User doesn't exist - create new account
+    // Step 2: Check if user exists with same wallet address (merge scenario)
+    if (metadata?.walletAddress) {
+      const userByWallet = await this.db.query.users.findFirst({
+        where: eq(users.tonWalletAddress, metadata.walletAddress)
+      })
+      
+      if (userByWallet) {
+        // Found user with same wallet - merge provider ID into existing account
+        await this.db.update(users)
+          .set({ 
+            privyUserId: providerId,
+            telegramUserId: metadata.telegramUserId || userByWallet.telegramUserId
+          })
+          .where(eq(users.id, userByWallet.id))
+        
+        // Return merged user
+        const mergedUser = await this.db.query.users.findFirst({
+          where: eq(users.id, userByWallet.id)
+        })
+        return this.toUserProfile(mergedUser!)
+      }
+    }
+
+    // Step 3: Check if user exists with same Telegram ID (merge scenario)
+    if (metadata?.telegramUserId) {
+      const userByTelegram = await this.db.query.users.findFirst({
+        where: eq(users.telegramUserId, metadata.telegramUserId)
+      })
+      
+      if (userByTelegram) {
+        // Found user with same Telegram ID - merge provider ID into existing account
+        await this.db.update(users)
+          .set({ 
+            privyUserId: providerId,
+            tonWalletAddress: metadata.walletAddress || userByTelegram.tonWalletAddress
+          })
+          .where(eq(users.id, userByTelegram.id))
+        
+        // Return merged user
+        const mergedUser = await this.db.query.users.findFirst({
+          where: eq(users.id, userByTelegram.id)
+        })
+        return this.toUserProfile(mergedUser!)
+      }
+    }
+
+    // Step 4: No existing user found - create new account
     const username = generateUsername(metadata?.email || `user_${providerId.slice(0, 8)}`)
     const memberCode = await this.generateUniqueMemberCode()
     const referralCode = await this.generateUniqueReferralCode()
@@ -167,6 +231,7 @@ export class AuthService {
       memberCode,
       referralCode,
       tonWalletAddress: metadata?.walletAddress || null,
+      telegramUserId: metadata?.telegramUserId || null,
       isAdmin: false
     }).returning()
 

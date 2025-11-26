@@ -52,8 +52,11 @@ export class TonService {
 
   /**
    * Link TON wallet to user account
+   * 
+   * CRITICAL: Supports identity merging when same wallet connects from different entry points
+   * (e.g., user starts on Telegram, later connects same wallet on web)
    */
-  async linkWallet(userId: number, walletAddress: string, network: 'testnet' | 'mainnet'): Promise<void> {
+  async linkWallet(userId: number, walletAddress: string, network: 'testnet' | 'mainnet'): Promise<{ merged: boolean; mergedUserId?: number }> {
     // Validate address format
     if (!isValidTonAddress(walletAddress)) {
       throw new Error('Invalid TON wallet address format')
@@ -65,16 +68,96 @@ export class TonService {
     })
 
     if (existingUser && existingUser.id !== userId) {
-      throw new Error('This wallet is already linked to another account')
+      // CRITICAL DECISION POINT: Wallet exists on different account
+      // This can happen when same person has two separate accounts:
+      // - One from website (privy_user_id only)
+      // - One from Telegram (telegram_user_id only)
+      // We need to determine which account to keep
+      
+      const currentUser = await this.db.query.users.findFirst({
+        where: eq(users.id, userId)
+      })
+
+      if (!currentUser) {
+        throw new Error('Current user not found')
+      }
+
+      // Merge strategy: Prefer the account with more identity anchors
+      // If they're equal, prefer the older account (lower ID)
+      const currentAnchors = [
+        currentUser.privyUserId,
+        currentUser.telegramUserId,
+        currentUser.tonWalletAddress
+      ].filter(Boolean).length
+
+      const existingAnchors = [
+        existingUser.privyUserId,
+        existingUser.telegramUserId,
+        existingUser.tonWalletAddress
+      ].filter(Boolean).length
+
+      // Determine which account to merge INTO
+      let primaryUser, secondaryUser
+      if (currentAnchors > existingAnchors) {
+        primaryUser = currentUser
+        secondaryUser = existingUser
+      } else if (existingAnchors > currentAnchors) {
+        primaryUser = existingUser
+        secondaryUser = currentUser
+      } else {
+        // Equal anchors - prefer older account (lower ID)
+        if (currentUser.id < existingUser.id) {
+          primaryUser = currentUser
+          secondaryUser = existingUser
+        } else {
+          primaryUser = existingUser
+          secondaryUser = currentUser
+        }
+      }
+
+      // Merge identities: Copy missing anchors to primary account
+      const updates: any = {}
+      if (!primaryUser.privyUserId && secondaryUser.privyUserId) {
+        updates.privyUserId = secondaryUser.privyUserId
+      }
+      if (!primaryUser.telegramUserId && secondaryUser.telegramUserId) {
+        updates.telegramUserId = secondaryUser.telegramUserId
+      }
+      if (!primaryUser.tonWalletAddress && secondaryUser.tonWalletAddress) {
+        updates.tonWalletAddress = secondaryUser.tonWalletAddress
+        updates.tonNetwork = secondaryUser.tonNetwork
+      }
+
+      // Apply merge
+      if (Object.keys(updates).length > 0) {
+        await this.db.update(users)
+          .set(updates)
+          .where(eq(users.id, primaryUser.id))
+      }
+
+      // TODO: In future, also migrate:
+      // - Matrix instances
+      // - Contributions
+      // - Rewards
+      // Then delete secondary account
+
+      console.log(`[TonService] Identity merge detected: User ${secondaryUser.id} merged into User ${primaryUser.id}`)
+
+      return {
+        merged: true,
+        mergedUserId: primaryUser.id
+      }
     }
 
-    // Update user with wallet info
+    // No conflict - simple wallet link
     await this.db.update(users)
       .set({ 
         tonWalletAddress: walletAddress,
         tonNetwork: network
       })
       .where(eq(users.id, userId))
+
+    return { merged: false }
   }
 
   /**
